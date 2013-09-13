@@ -16,11 +16,13 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import com.jant.ant.AntExecute;
+import com.jant.ant.EspecialFunctions;
 
 /**
  * The shell program.
@@ -56,7 +58,7 @@ public class Shell extends ScriptableObject {
 
 			// Define some global functions particular to the shell. Note
 			// that these functions are not part of ECMA.
-			String[] names = { "print", "quit", "version", "load", "help", "e" };
+			String[] names = { "print", "quit", "version", "load", "help", "executeAnt" };
 			shell.defineFunctionProperties(names, Shell.class, ScriptableObject.DONTENUM);
 
 			args = processOptions(cx, args);
@@ -74,6 +76,7 @@ public class Shell extends ScriptableObject {
 			Scriptable argsObj = cx.newArray(shell, array);
 			shell.defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
 
+			shell.processSource(cx, "src/javascript/ant.js");
 			shell.processSource(cx, args.length == 0 ? null : args[0]);
 		} finally {
 			Context.exit();
@@ -298,12 +301,21 @@ public class Shell extends ScriptableObject {
 
 	static AntExecute exec = new AntExecute();
 
-	public static boolean e(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static boolean executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		Scriptable obj = Context.toObject(args[1], thisObj);
-		for (Object id : obj.getIds()) {
-			String idTxt = Context.toString(id);
-			map.put(idTxt, obj.get(idTxt, obj));
+		NativeArray nativeArray = (NativeArray) args[1];
+		if (nativeArray.size() > 0) {
+			Object natObj = nativeArray.get(0);
+			if (natObj instanceof Scriptable) {
+				Scriptable obj = Context.toObject(natObj, thisObj);
+
+				for (Object id : obj.getIds()) {
+					String idTxt = Context.toString(id);
+					map.put(idTxt, obj.get(idTxt, obj));
+				}
+			} else {
+				map.put(EspecialFunctions.ADD_TEXT, Context.toString(natObj));
+			}
 		}
 		return exec.execute(Context.toString(args[0]), map);
 	}
