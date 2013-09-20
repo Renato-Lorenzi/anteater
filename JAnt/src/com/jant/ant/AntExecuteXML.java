@@ -15,10 +15,10 @@ import org.apache.tools.ant.taskdefs.condition.Condition;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-public class AntExecute {
+public class AntExecuteXML {
 	Project prj = new Project();
 
-	public AntExecute() {
+	public AntExecuteXML() {
 		prj.init();
 		DefaultLogger consoleLogger = new DefaultLogger();
 		consoleLogger.setErrorPrintStream(System.err);

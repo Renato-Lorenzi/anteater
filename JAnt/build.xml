@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="main" name="seniortools">
+
+	<!-- ponto de partida -->
+	<target name="main">
+		<!--<echo>teste</echo>-->
+		<fileset dir="${basedir}/lib">
+			<include name="**.jar" />
+		</fileset>
+	</target>
+
+</project>

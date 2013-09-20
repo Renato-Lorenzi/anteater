@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="main" name="seniortools">
+
+	<!-- carrega taskdefs -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${basedir}/lib/ant-contrib-1.0b3.jar" />
+	<taskdef resource="net/sf/ant4eclipse/antlib.xml" classpath="${basedir}/lib/ant4eclipse-0.5.0.rc1.jar" />
+	<taskdef resource="com/senior/build/ant/antlib.xml">
+		<classpath>
+			<fileset dir="${basedir}/lib">
+				<include name="**.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
+	<property name="workspace.dir" value="${basedir}/.." />
+
+	<!--
+		Realiza o empacotamento das bibliotecas do SeniorTools e suas dependencias. 
+		Durante o empacotamento do framework o arquivo .classpath do projeto seniortools-lib é alterado 
+		para conter todas as referencias às bibliotecas empacotadas.		
+		Os pacotes jar são salvos no diretorio do SeniorPDC em uma pasta correspondente ao branch/tag em que este build por executado.
+		
+		Pode ser utilizado também para empacotar qualquer outro produto e suas dependências.
+		Neste caso não é alterado o projeto seniortools-lib e nem o diretório SeniorPDC
+	-->
+
+	<tstamp>
+		<format property="ano" pattern="yyyy" />
+	</tstamp>
+
+
+	<!-- Carrega as propriedades a partir do projeto de configuração, validando a existência do arquivo de configuração -->
+	<if>
+		<not>
+			<available file="${workspace.dir}/seniortools-lib-config/build.properties" property="property.file" />
+		</not>
+		<then>
+			<fail message="É necessário realizar o check out e configurar o arquivo build.properties no projeto seniortools-lib-config do seu produto" />
+		</then>
+	</if>
+	<property file="${workspace.dir}/seniortools-lib-config/build.properties" />
+
+	<!-- Valida se a versão está setada ou se existe tag/branch -->
+	<if>
+		<and>
+			<not>
+				<available file="${workspace.dir}/${lib.project}/CVS/Tag" property="version.tag" />
+			</not>
+			<not>
+				<isset property="lib.version" />
+			</not>
+		</and>
+		<then>
+			<fail message="Se a tag do cvs não existir é necessario definir a propriedade lib.version no arquivo build.properties" />
+		</then>
+	</if>
+
+	<!-- Valida se o nome do projeto contendo os psf's foi setado -->
+	<if>
+		<not>
+			<isset property="lib.project" />
+		</not>
+		<then>
+			<fail message="É necessário definir a propriedade lib.project do arquivo build.properties." />
+		</then>
+
+	</if>
+
+	<!-- Faz o parse da versão do branch/tag para o formato correto (x.y.z/w) -->
+	<scriptdef name="getVersionAndTag" language="javascript">
+		<attribute name="text" />
+		<attribute name="property" />
+		<![CDATA[
+			var text = attributes.get("text");
+			var aux = text.substring(5).split('-');
+			var version = "";
+			for(i = 0; i < aux.length - 1; i++) {
+				version += aux[i] + ".";
+			}
+			var tag = aux[aux.length - 1] + "";
+			tag = tag.substring(0, tag.length - 2);
+			if(aux.length == 4) {
+				version = version.substring(0, version.length - 1);
+				version += "\\" + tag;
+			} else {
+				version += tag;	
+			}
+			project.setProperty(attributes.get("property"), version);
+	    ]]>
+	</scriptdef>
+	<!-- Faz o parse da versão do branch/tag para o formato de diretório (x.y.z/w) -->
+	<scriptdef name="getVersionAndTagTyped" language="javascript">
+		<attribute name="text" />
+		<attribute name="property" />
+		<![CDATA[
+			var text = attributes.get("text");
+			var aux = text.split('\\.');
+			var version = "";
+			for(i = 0; i < aux.length - 1; i++) {
+				version += aux[i] + ".";
+			}
+			var tag = aux[aux.length - 1] + "";
+			if(aux.length == 4) {
+				version = version.substring(0, version.length - 1);
+				version += "/" + tag;
+			} else {
+				version += tag;	
+			}
+			project.setProperty(attributes.get("property"), version);
+	    ]]>
+	</scriptdef>
+	<!-- Faz o parse da versão do branch/tag para o formato de versao (x.y.z.w) -->
+	<scriptdef name="getVersion" language="javascript">
+		<attribute name="text" />
+		<attribute name="property" />
+		<![CDATA[
+			var text = attributes.get("text");
+			var version = text.replace('/', '.');
+			project.setProperty(attributes.get("property"), version);
+	    ]]>
+	</scriptdef>
+
+	<property name="lib.dir" value="C:/Diretorio" />
+	<!-- Formata o nome da tag do CVS ou usa o lib.version passado como parametro -->
+	<if>
+		<isset property="lib.version" />
+		<then>
+			<property name="lib.version.build" value="${lib.version}" />
+			<getVersionAndTagTyped text="${lib.version}" property="lib.version.dir" />
+		</then>
+		<else>
+			<loadfile property="version.tag" srcfile="${workspace.dir}/${lib.project}/CVS/Tag" />
+			<property name="lib.version" value="${version.tag}" />
+			<getVersionAndTag text="${lib.version}" property="lib.version.dir" />
+			<getVersion text="${lib.version.dir}" property="lib.version.build" />
+		</else>
+	</if>
+
+	<property name="jar.dest" location="${lib.dir}/${lib.version.dir}" />
+
+	<!-- nome do arquivo src -->
+	<property name="srcfile.name" value="${lib.project}-src.zip" />
+	<!-- caminhos para a geração do javadoc 
+		A princípio gera no mesmo diretório dos jars e dos sources, porém é customizável -->
+	<property name="javadoc.dest" value="${jar.dest}" />
+	<property name="javadocfile.name" value="${lib.project}-javadoc.zip" />
+	<!-- nome da pasta temporária para geração do javadoc -->
+	<property name="javadoc.output" value="${javadoc.dest}\javadoc" />
+
+	<!-- nome do arquivo de projectset: referencia de nomes de projeto para empacotamento -->
+	<property name="psf.file" value="fontes.psf" />
+	<!-- nome e versão do produto que está sendo gerado -->
+	<property name="product.name" value="${lib.project}" />
+	<property name="product.version" value="${lib.version.build}" />
+
+	<!-- Seta a flag se o projeto é seniortools -->
+	<if>
+		<equals arg1="${lib.project}" arg2="seniortools" />
+		<then>
+			<if>
+				<isset property="lib.is.framework" />
+				<then>
+					<if>
+						<istrue value="${lib.is.framework}" />
+						<then>
+							<property name="is.seniortools" value="true" />
+						</then>
+						<else>
+							<property name="is.seniortools" value="false" />
+						</else>
+					</if>
+				</then>
+				<else>
+					<property name="is.seniortools" value="false" />
+				</else>
+			</if>
+		</then>
+		<else>
+			<property name="is.seniortools" value="false" />
+		</else>
+	</if>
+	<!-- Arquivo descritor (arquivos com nomes diferentes para framework ou produto) -->
+	<if>
+		<istrue value="${is.seniortools}" />
+		<then>
+			<property name="descriptor.name" value="seniortools-descriptor.json" />
+		</then>
+		<else>
+			<property name="descriptor.name" value="product-descriptor.json" />
+		</else>
+	</if>
+	<property name="descriptor.file" location="${jar.dest}\${descriptor.name}" />
+	<!--diretorio do arquivo .classpath que será configurado para o projeto seniortools-lib -->
+	<property name="classpath.dir" location="${basedir}/../seniortools-lib" />
+
+	<!-- Mensagens -->
+	<macrodef name="skipmessage">
+		<attribute name="module" />
+		<sequential>
+			<echo message="skipping @{module}" level="info" />
+		</sequential>
+	</macrodef>
+
+	<!-- rotina de assinatura digital -->
+	<property name="keystore.file" value=".keystore" />
+	<macrodef name="sign">
+		<attribute name="file" />
+		<sequential>
+			<property name="alias" value="seniortools" />
+			<property name="storepass" value="senior" />
+			<property name="keypass" value="senior" />
+			<!-- validade da chave em dias = Short.MAX_VALUE -->
+			<property name="validity" value="32767" />
+			<property name="keysize" value="1024" />
+
+			<available property="keytool.exists" file="${keystore.file}" />
+			<if>
+				<isset property="keytool.exists" />
+				<then>
+					<!-- apaga arquivo de chave -->
+					<delete file="${keystore.file}" />
+				</then>
+			</if>
+			<genkey alias="${alias}" storepass="${storepass}" dname="CN=Senior, OU=Senior, O=Senior, L=Blumenau, S=SC, C=BR" keystore="${keystore.file}" validity="${validity}" keysize="${keysize}" />
+
+			<signjar jar="@{file}" alias="${alias}" storepass="${storepass}" keystore="${keystore.file}" />
+		</sequential>
+	</macrodef>
+
+	<!-- Copia as bibliotecas externas -->
+	<macrodef name="copyExtraLibs">
+		<attribute name="moduleName" />
+		<attribute name="addClasspathEntries" />
+		<attribute name="exported" default="false" />
+		<sequential>
+			<echo message="copying @{moduleName}..." level="info" />
+			<for param="jarfile">
+				<fileset dir="${workspace.dir}/@{moduleName}">
+					<include name="**/*.jar" />
+				</fileset>
+				<sequential>
+					<!-- adiciona as entradas ao arquivo .classpath do projeto -->
+					<var name="extrajar" unset="true" />
+					<basename file="@{jarfile}" property="extrajar" />
+					<echo message="copying @{jarfile} to ${jar.dest}" level="info" />
+					<copy todir="${jar.dest}" overwrite="true" flatten="true" file="@{jarfile}" verbose="no" />
+				</sequential>
+			</for>
+		</sequential>
+	</macrodef>
+
+	<!--
+		Empacota todos os projetos que são referenciados dentro dos ${psf.file} encontrados no diretorio ${lib.project}.
+		Modulos listados no arquivo SeniorToolsDescriptor.properties serão inteiramente ignorados.
+		
+		Pré-condição: os projetos referenciados em cada ${psf.file} devem existir dentro do workspace.		
+	-->
+	<target name="pack">
+		<echo message="preparing ${jar.dest}..." level="info" />
+		<mkdir dir="${jar.dest}" />
+		<mkdir dir="${javadoc.output}" />
+
+		<!-- empacota modulos -->
+		<for param="psf.module.dir">
+			<path>
+				<dirset dir="${workspace.dir}/${lib.project}">
+					<include name="/*" />
+				</dirset>
+			</path>
+			<sequential>
+				<!-- reset da propriedade -->
+				<var name="psf.module.name" unset="true" />
+				<!-- pega apenas o nome do módulo -->
+				<basename property="psf.module.name" file="@{psf.module.dir}" />
+
+				<!-- caminho completo do arquivo psf -->
+				<var name="psffile" value="@{psf.module.dir}/${psf.file}" />
+
+				<!-- reset da propriedade -->
+				<var name="fileExists" unset="true" />
+				<!-- Se modulo não possui o arquivo ${psffile} OU nao foi adicionado a propriedade lib.generate do SeniorTools.properties, então ignora o modulo.-->
+				<available file="${psffile}" property="fileExists" value="true" />
+				<script language="javascript">
+							    var modules = project.getProperty("lib.generate");
+							    var current = project.getProperty("psf.module.name");
+								var split = modules.split(",");
+								var flag = false;
+								for(i = 0 ; i != split.length; i++){
+									if(split[i].equals(current)){
+										flag=true;
+										break;
+									}
+								}
+								project.setProperty("generateModule", flag);
+					</script>
+				<if>
+					<or>
+						<not>
+							<isset property="fileExists" />
+						</not>
+						<isfalse value="${generateModule}" />
+					</or>
+					<then>
+						<skipmessage module="${psf.module.name}" />
+					</then>
+					<else>
+						<echo message="packing module ${psf.module.name}..." level="info" />
+						<!-- percorre todos os projetos referenciados no arquivo ${psf.file} do modulo-->
+						<getPSFProjects property="psfProjects" delimiter="," workspace="${workspace.dir}" file="${psffile}" />
+						<foreach list="${psfProjects}" param="build.project" target="getProject">
+							<param name="build.project" />
+						</foreach>
+					</else>
+				</if>
+			</sequential>
+		</for>
+		<if>
+			<istrue value="${is.seniortools}" />
+			<then>
+				<!-- copia bibliotecas extras -->
+				<echo message="copying extra modules..." level="verbose" />
+				<copyExtraLibs modulename="external-libs" addClasspathEntries="true" />
+				<copyExtraLibs modulename="external-libs-dev" addClasspathEntries="true" />
+			</then>
+		</if>
+		<!-- gera o zip e remove o diretório temporário do javadoc -->
+		<zip destfile="${javadoc.dest}/${javadocfile.name}" basedir="${javadoc.output}" update="false" whenempty="create" keepcompression="true" duplicate="fail" level="9" />
+		<delete dir="${javadoc.output}" failonerror="false" verbose="true" />
+	</target>
+
+	<target name="getProject">
+		<!-- verifica se o projeto existe no workspace, senão ignore e avisa no console -->
+		<available property="project.found" type="dir" file="${workspace.dir}/${build.project}" />
+		<if>
+			<isset property="project.found" />
+			<then>
+				<antcall target="for-project" />
+			</then>
+			<else>
+				<echo message="project ${build.project} not found in workspace." />
+			</else>
+		</if>
+	</target>
+
+	<!-- Gera o javadoc do projeto -->
+	<macrodef name="javadoc-project">
+		<sequential>
+			<if>
+				<isset property="java.project" />
+				<then>
+					<fileset dir="${workspace.dir}/${build.project}" includes="**/*.java" id="javafileset" />
+					<pathconvert refid="javafileset" property="fileset.notempty" setonempty="false" />
+					<if>
+						<isset property="fileset.notempty" />
+						<then>
+							<getEclipseClasspath property="project.classpath" workspace="${workspace.dir}" projectname="${build.project}" />
+							<getSourcepath project="${workspace.dir}/${build.project}" property="sourcepath" allowMultipleFolders="true" />
+							<for list="${sourcepath}" param="spath" delimiter=";">
+								<sequential>
+									<echo message="generating javadoc for ${build.project} - srcpath: @{spath} to ${javadoc.output}" />
+									<!-- Existem limitações no javadoc, parâmetros failonerror e noindex - por exemplo - não estão sendo respeitados
+									TODO: Remover arquivos .html da raiz do diretório javadoc antes de empacotar o zip -->
+									<javadoc access="public" author="true" use="true" version="true" verbose="false" destdir="${javadoc.output}" failonerror="false" nodeprecated="false" nodeprecatedlist="false" noindex="true" nonavbar="false" notree="false" nohelp="false" packagenames="*" source="1.6" sourcepath="@{spath}" classpath="${project.classpath}" useexternalfile="true" />
+								</sequential>
+							</for>
+						</then>
+					</if>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- executa todas as targets que são aplicaveis a um projeto
+		- gera o jar e o manifest
+		- assina digitalmente o jar
+		- adiciona os fontes no src.zip
+		- adiciona no classpath do projeto seniortools-lib
+	 -->
+	<target name="for-project">
+
+		<!-- empacotando jars... -->
+		<echo message="packing ${build.project}..." level="info" />
+
+		<var name="jar.file" value="${build.project}.jar" />
+		<var name="outputpath" unset="true" />
+		<var name="sourcepath" unset="true" />
+
+		<!-- se o projeto é de natureza Java, então usa o output path do eclipse (bin), senão empacota todo o projeto -->
+		<condition property="java.project">
+			<hasNature workspace="${workspace.dir}" projectName="${build.project}" nature="java" />
+		</condition>
+
+		<ant target="src-project" />
+
+		<javadoc-project />
+
+		<isWarProject projectName="${build.project}" workspace="${workspace.dir}" property="project.isWar" />
+
+		<!-- Verificar se o projeto é um projeto de workflow  -->
+		<condition property="project.iswfe">
+			<hasNature workspace="${workspace.dir}" projectName="${build.project}" nature="br.com.senior.seniortools.wfe.core.nature" />
+		</condition>
+
+		<if>
+			<istrue value="${project.isWar}" />
+			<then>
+				<ant target="war-project" />
+			</then>
+			<elseif>
+				<istrue value="${project.iswfe}" />
+				<then>
+					<ant target="wfe-project" />
+				</then>
+			</elseif>
+			<else>
+				<ant target="jar-project" />
+			</else>
+		</if>
+	</target>
+
+	<target name="war-project">
+		<if>
+			<isset property="java.project" />
+			<then>
+				<getOutputpath project="${workspace.dir}/${build.project}" property="outputpath" />
+			</then>
+			<else>
+				<var name="outputpath" value="${workspace.dir}/${build.project}" />
+			</else>
+		</if>
+		<var name="webpath" value="${workspace.dir}/${build.project}/web/" />
+		<delete file="${jar.dest}/${build.project}.war" failonerror="false" />
+		<if>
+			<available file="${outputpath}" />
+			<then>
+				<war destfile="${jar.dest}/${build.project}.war" webxml="${webpath}/WEB-INF/web.xml" update="true">
+					<fileset dir="${webpath}" includes="**/*.*" />
+					<classes dir="${outputpath}" />
+					<manifest>
+						<attribute name="File-Description" value="${build.project}.war" />
+						<attribute name="File-Version" value="${lib.version.build}" />
+						<attribute name="Internal-Name" value="${build.project}.war" />
+						<attribute name="Legal-Copyright" value=" ${ano}" />
+						<attribute name="Legal-Trademarks" value="Senior Sistemas SA." />
+						<attribute name="Original-Filename" value="${build.project}.war" />
+						<attribute name="Product-Name" value="${product.name}" />
+						<attribute name="Product-Version" value="${product.version}" />
+						<attribute name="Company-HTTP" value="http://www.senior.com.br" />
+					</manifest>
+				</war>
+			</then>
+			<else>
+				<war destfile="${jar.dest}/${build.project}.war" webxml="${webpath}/WEB-INF/web.xml" update="true">
+					<fileset dir="${webpath}" includes="**/*.*" />
+					<manifest>
+						<attribute name="File-Description" value="${build.project}.war" />
+						<attribute name="File-Version" value="${lib.version.build}" />
+						<attribute name="Internal-Name" value="${build.project}.war" />
+						<attribute name="Legal-Copyright" value=" ${ano}" />
+						<attribute name="Legal-Trademarks" value="Senior Sistemas SA." />
+						<attribute name="Original-Filename" value="${build.project}.war" />
+						<attribute name="Product-Name" value="${product.name}" />
+						<attribute name="Product-Version" value="${product.version}" />
+						<attribute name="Company-HTTP" value="http://www.senior.com.br" />
+					</manifest>
+				</war>
+			</else>
+		</if>
+	</target>
+
+	<target name="jar-project">
+		<if>
+			<isset property="java.project" />
+			<then>
+				<getOutputpath project="${workspace.dir}/${build.project}" property="outputpath" />
+			</then>
+			<else>
+				<var name="outputpath" value="${workspace.dir}/${build.project}" />
+			</else>
+		</if>
+		<delete file="${jar.dest}/${build.project}.jar" failonerror="false" />
+		<jar destfile="${jar.dest}/${build.project}.jar">
+			<fileset dir="${outputpath}" includes="**/*.*" />
+			<manifest>
+				<attribute name="File-Description" value="${jar.file}" />
+				<attribute name="File-Version" value="${lib.version.build}" />
+				<attribute name="Internal-Name" value="${jar.file}" />
+				<attribute name="Legal-Copyright" value=" ${ano}" />
+				<attribute name="Legal-Trademarks" value="Senior Sistemas SA." />
+				<attribute name="Original-Filename" value="${jar.file}" />
+				<attribute name="Product-Name" value="${product.name}" />
+				<attribute name="Product-Version" value="${product.version}" />
+				<attribute name="Company-HTTP" value="http://www.senior.com.br" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!--Empacotamento de projetos de processo -->
+	<target name="wfe-project">
+		<property name="project.wfe.temp" value="${jar.dest}/${build.project}/temp/" />
+		<delete dir="${project.wfe.temp}" />
+		<mkdir dir="${project.wfe.temp}" />
+		<copy todir="${project.wfe.temp}">
+			<fileset dir="${workspace.dir}/${build.project}">
+				<include name="**/*.wpm" />
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+		<move todir="${project.wfe.temp}">
+			<fileset dir="${project.wfe.temp}">
+				<include name="**/*.wpm" />
+				<include name="**/*.png" />
+			</fileset>
+			<mapper type="glob" from="*" to="${build.project}-*" />
+		</move>
+		<var name="outputpath" value="${project.wfe.temp}" />
+		<delete file="${jar.dest}/${build.project}.jar" failonerror="false" />
+		<jar destfile="${jar.dest}/${build.project}.jar">
+			<fileset dir="${outputpath}" includes="**/*.*" />
+			<manifest>
+				<attribute name="File-Description" value="${jar.file}" />
+				<attribute name="File-Version" value="${lib.version.build}" />
+				<attribute name="Internal-Name" value="${jar.file}" />
+				<attribute name="Legal-Copyright" value=" ${ano}" />
+				<attribute name="Legal-Trademarks" value="Senior Sistemas SA." />
+				<attribute name="Original-Filename" value="${jar.file}" />
+				<attribute name="Product-Name" value="${product.name}" />
+				<attribute name="Product-Version" value="${product.version}" />
+				<attribute name="Company-HTTP" value="http://www.senior.com.br" />
+			</manifest>
+		</jar>
+		<delete dir="${jar.dest}/${build.project}" />
+	</target>
+
+	<!-- Compacta os fontes apenas se for um projeto java.
+		Faz um for, pois ${sourcepath} pode retornar mais de um diretorio. -->
+	<target name="src-project" if="java.project">
+		<getSourcepath project="${workspace.dir}/${build.project}" property="sourcepath" allowMultipleFolders="true" />
+		<for list="${sourcepath}" param="spath" delimiter=";">
+			<sequential>
+				<echo message="including ${build.project} in ${srcfile.name}" level="info" />
+				<zip destfile="${jar.dest}/${srcfile.name}" basedir="@{spath}" update="true" whenempty="create" duplicate="fail" level="9" />
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Gera o arquivo descritor das dependências e característica do projeto -->
+	<target name="generate-descriptor">
+		<if>
+			<istrue value="${is.seniortools}" />
+			<then>
+				<delete file="${classpath.dir}/.classpath" failonerror="false" />
+				<delete file="${classpath.dir}/content.properties" failonerror="false" />
+			</then>
+		</if>
+
+		<getDescriptor workspace="${workspace.dir}/" projectName="${lib.project}" framework="${is.seniortools}" productVersion="${lib.version.build}" property="internalLibs" />
+		<available property="descriptor.exists" file="${descriptor.file}" />
+		<if>
+			<istrue value="${descriptor.exists}" />
+			<then>
+				<getMergeDescriptor existentDescriptor="${descriptor.file}" newDescriptor="${workspace.dir}/${lib.project}/${descriptor.name}" />
+			</then>
+			<else>
+				<copy file="${workspace.dir}/${lib.project}/${descriptor.name}" todir="${jar.dest}" />
+			</else>
+		</if>
+		<!-- Copia as bibliotecas internas do projeto que estão sendo exportadas -->
+		<for list="${internalLibs}" param="iLib" delimiter=",">
+			<sequential>
+				<echo message="copying internal lib: @{iLib} to ${jar.dest}" />
+				<copy file="@{iLib}" todir="${jar.dest}" />
+			</sequential>
+		</for>
+		<delete file="${workspace.dir}/${lib.project}/${descriptor.name}" failonerror="false" />
+	</target>
+
+	<!-- ponto de partida -->
+	<target name="main">
+		<antcall target="generate-descriptor" />
+		<antcall target="pack" />
+		<delete file="${keystore.file}" failonerror="false" />
+	</target>
+
+</project>

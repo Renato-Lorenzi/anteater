@@ -5,13 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
@@ -22,7 +28,9 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import com.jant.ant.AntExecute;
+import com.jant.ant.AntWrapperExecute;
 import com.jant.ant.EspecialFunctions;
+import com.sun.xml.internal.bind.marshaller.XMLWriter;
 
 /**
  * The shell program.
@@ -299,20 +307,15 @@ public class Shell extends ScriptableObject {
 		}
 	}
 
-	static AntExecute exec = new AntExecute();
+	static AntWrapperExecute exec = new AntWrapperExecute();
 
-	public static boolean executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static boolean e(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		NativeArray nativeArray = (NativeArray) args[1];
 		if (nativeArray.size() > 0) {
 			Object natObj = nativeArray.get(0);
 			if (natObj instanceof Scriptable) {
-				Scriptable obj = Context.toObject(natObj, thisObj);
-
-				for (Object id : obj.getIds()) {
-					String idTxt = Context.toString(id);
-					map.put(idTxt, obj.get(idTxt, obj));
-				}
+				// toXML(thisObj, map, natObj);
 			} else {
 				map.put(EspecialFunctions.ADD_TEXT, Context.toString(natObj));
 			}
@@ -325,4 +328,87 @@ public class Shell extends ScriptableObject {
 	}
 
 	private boolean quitting;
+
+	/**
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+
+	public static boolean executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		NativeArray nativeArray = (NativeArray) args[1];
+		if (nativeArray.size() > 0) {
+			Object natObj = nativeArray.get(0);
+			if (natObj instanceof Scriptable) {
+				StringBuilder sb = new StringBuilder();
+				go((Scriptable) natObj, Context.toString(args[0]), sb);
+				System.out.println(sb);
+			} else {
+				map.put(EspecialFunctions.ADD_TEXT, Context.toString(natObj));
+			}
+		}
+		return false;// exec.execute(Context.toString(args[0]), map);
+	}
+
+	static void go(Scriptable natObj, String name, StringBuilder ret) {
+		Project prj = new Project();
+		File buildFile = new File("buildA.xml");
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(buildFile);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		DefaultLogger consoleLogger = new DefaultLogger();
+		consoleLogger.setErrorPrintStream(System.err);
+		consoleLogger.setOutputPrintStream(System.out);
+		consoleLogger.setMessageOutputLevel(Project.MSG_INFO);
+		prj.addBuildListener(consoleLogger);
+		try {
+			ret.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			ret.append("	<project default=\"main\" name=\"seniortools\">	\n");
+			ret.append("<target name=\"main\">\n");
+			toXML(natObj, name, ret);
+			ret.append("	</target>");
+			ret.append("	</project>");
+			out.write(ret.toString().getBytes());
+			prj.fireBuildStarted();
+			prj.init();
+			ProjectHelper helper = ProjectHelper.getProjectHelper();
+			prj.addReference("ant.projectHelper", helper);
+			helper.parse(prj, buildFile);
+			prj.getTargets().get(name).getTasks()[0].perform();
+			out.close();
+			prj.fireBuildFinished(null);
+		} catch (BuildException e) {
+			prj.fireBuildFinished(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void toXML(Scriptable natObj, String name, StringBuilder ret) {
+		ret.append("\n<" + name);
+		boolean withScript = false;
+		for (Object id : natObj.getIds()) {
+			String idTxt = Context.toString(id);
+			Object obj = natObj.get(idTxt, natObj);
+			if (obj instanceof Scriptable) {
+				ret.append(">");
+				withScript = true;
+				toXML((Scriptable) obj, idTxt, ret);
+			} else {
+				ret.append(" " + idTxt + "= \"" + Context.toString(obj) + "\" ");
+			}
+		}
+		ret.append(withScript ? "<" + name + "/>\n" : "/>\n");
+	}
 }
