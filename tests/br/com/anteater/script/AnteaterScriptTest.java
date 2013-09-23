@@ -98,6 +98,17 @@ public class AnteaterScriptTest {
 	}
 
 	@Test
+	public void testTaskContainer() throws IOException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+
+		AnteaterScript script = new AnteaterScript();
+		script.execute(new String[] { TEST_RES + "taskContainer.js" });
+
+		assertFile(outFile, inFile);
+	}
+
+	@Test
 	public void testProp() throws IOException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");

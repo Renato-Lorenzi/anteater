@@ -137,8 +137,7 @@ public class AntBuilder extends BuilderSupport {
 		ue.setTaskName(parentTask.getTaskName());
 		ue.setLocation(parentTask.getLocation());
 		ue.setOwningTarget(parentTask.getOwningTarget());
-		ue.setRuntimeConfigurableWrapper(parentTask
-				.getRuntimeConfigurableWrapper());
+		ue.setRuntimeConfigurableWrapper(parentTask.getRuntimeConfigurableWrapper());
 		parentTask.getRuntimeConfigurableWrapper().setProxy(ue);
 		antXmlContext.pushWrapper(parentTask.getRuntimeConfigurableWrapper());
 	}
@@ -221,8 +220,7 @@ public class AntBuilder extends BuilderSupport {
 	 * @see groovy.util.BuilderSupport#doInvokeMethod(java.lang.String,
 	 *      java.lang.Object, java.lang.Object)
 	 */
-	protected Object doInvokeMethod(String methodName, Object name, Object args)
-			throws MissingMethodException {
+	protected Object doInvokeMethod(String methodName, Object name, Object args) throws MissingMethodException {
 		super.doInvokeMethod(methodName, name, (List<Object>) args);
 
 		// return the completed node
@@ -247,7 +245,11 @@ public class AntBuilder extends BuilderSupport {
 		antElementHandler.onEndElement(null, null, antXmlContext);
 
 		lastCompletedNode = node;
-		if (parent != null && !(parent instanceof Target)) {
+
+		/**
+		 * Comment to support antCall and ant target
+		 */
+		if (parent != null /* && !(parent instanceof Target) */) {
 			log.finest("parent is not null: no perform on nodeCompleted");
 			return; // parent will care about when children perform
 		}
@@ -257,9 +259,11 @@ public class AntBuilder extends BuilderSupport {
 			Task task = (Task) node;
 			final String taskName = task.getTaskName();
 
+			/**
+			 * Comment to support antCall and ant target
+			 */
 			if ("antcall".equals(taskName) && parent == null) {
-				throw new BuildException(
-						"antcall not supported within AntBuilder, consider using 'ant.project.executeTarget('targetName')' instead.");
+				throw new BuildException("antcall not supported within AntBuilder, consider using 'ant.project.executeTarget('targetName')' instead.");
 			}
 
 			if (saveStreams) {
@@ -268,8 +272,7 @@ public class AntBuilder extends BuilderSupport {
 					int currentStreamCount = streamCount++;
 					if (currentStreamCount == 0) {
 						// we are first, save the streams
-						savedProjectInputStream = project
-								.getDefaultInputStream();
+						savedProjectInputStream = project.getDefaultInputStream();
 						savedIn = System.in;
 						savedErr = System.err;
 						savedOut = System.out;
@@ -279,8 +282,7 @@ public class AntBuilder extends BuilderSupport {
 							demuxInputStream = new DemuxInputStream(project);
 							System.setIn(demuxInputStream);
 						}
-						demuxOutputStream = new DemuxOutputStream(project,
-								false);
+						demuxOutputStream = new DemuxOutputStream(project, false);
 						System.setOut(new PrintStream(demuxOutputStream));
 						demuxErrorStream = new DemuxOutputStream(project, true);
 						System.setErr(new PrintStream(demuxErrorStream));
@@ -312,8 +314,7 @@ public class AntBuilder extends BuilderSupport {
 		try {
 			// Have to call fireTestStared/fireTestFinished via reflection as
 			// they unfortunately have protected access in Project
-			final Method fireTaskStarted = Project.class.getDeclaredMethod(
-					"fireTaskStarted", Task.class);
+			final Method fireTaskStarted = Project.class.getDeclaredMethod("fireTaskStarted", Task.class);
 			fireTaskStarted.setAccessible(true);
 			fireTaskStarted.invoke(project, task);
 
@@ -343,9 +344,7 @@ public class AntBuilder extends BuilderSupport {
 			throw ex;
 		} finally {
 			try {
-				final Method fireTaskFinished = Project.class
-						.getDeclaredMethod("fireTaskFinished", Task.class,
-								Throwable.class);
+				final Method fireTaskFinished = Project.class.getDeclaredMethod("fireTaskFinished", Task.class, Throwable.class);
 				fireTaskFinished.setAccessible(true);
 				fireTaskFinished.invoke(project, task, reason);
 			} catch (Exception e) {
@@ -385,8 +384,7 @@ public class AntBuilder extends BuilderSupport {
 			final Map.Entry entry = (Map.Entry) o;
 			final String attributeName = (String) entry.getKey();
 			final String attributeValue = String.valueOf(entry.getValue());
-			attr.addAttribute(null, attributeName, attributeName, "CDATA",
-					attributeValue);
+			attr.addAttribute(null, attributeName, attributeName, "CDATA", attributeValue);
 		}
 		return attr;
 	}
@@ -411,37 +409,35 @@ public class AntBuilder extends BuilderSupport {
 		}
 
 		try {
-			antElementHandler.onStartElement(ns, tagName, tagName, attrs,
-					antXmlContext);
+			antElementHandler.onStartElement(ns, tagName, tagName, attrs, antXmlContext);
 		} catch (final SAXParseException e) {
 			log.log(Level.SEVERE, "Caught: " + e, e);
 		}
 
 		insideTask = true;
-		final RuntimeConfigurable wrapper = (RuntimeConfigurable) antXmlContext
-				.getWrapperStack().lastElement();
+		final RuntimeConfigurable wrapper = (RuntimeConfigurable) antXmlContext.getWrapperStack().lastElement();
 		return wrapper.getProxy();
 	}
 
-	private Target onStartTarget(final Attributes attrs, String tagName,
-			String ns) {
+	private Target onStartTarget(final Attributes attrs, String tagName, String ns) {
 		final Target target = new Target();
 		target.setProject(project);
 		target.setLocation(new Location(antXmlContext.getLocator()));
 		try {
-			antTargetHandler.onStartElement(ns, tagName, tagName, attrs,
-					antXmlContext);
-			final Target newTarget = (Target) getProject().getTargets().get(
-					attrs.getValue("name"));
+			antTargetHandler.onStartElement(ns, tagName, tagName, attrs, antXmlContext);
+			final Target newTarget = (Target) getProject().getTargets().get(attrs.getValue("name"));
 
-			// execute dependencies (if any)
-			final Vector targets = new Vector();
-			for (final Enumeration deps = newTarget.getDependencies(); deps
-					.hasMoreElements();) {
-				final String targetName = (String) deps.nextElement();
-				targets.add(project.getTargets().get(targetName));
-			}
-			getProject().executeSortedTargets(targets);
+			/**
+			 * Strange code
+			 */
+			// // execute dependencies (if any)
+			// final Vector targets = new Vector();
+			// for (final Enumeration deps = newTarget.getDependencies();
+			// deps.hasMoreElements();) {
+			// final String targetName = (String) deps.nextElement();
+			// targets.add(project.getTargets().get(targetName));
+			// }
+			// getProject().executeSortedTargets(targets);
 
 			antXmlContext.setCurrentTarget(newTarget);
 			return newTarget;
@@ -454,11 +450,9 @@ public class AntBuilder extends BuilderSupport {
 	protected void setText(Object task, String text) {
 		final char[] characters = text.toCharArray();
 		try {
-			antElementHandler.characters(characters, 0, characters.length,
-					antXmlContext);
+			antElementHandler.characters(characters, 0, characters.length, antXmlContext);
 		} catch (final SAXParseException e) {
-			log.log(Level.WARNING,
-					"SetText failed: " + task + ". Reason: " + e, e);
+			log.log(Level.WARNING, "SetText failed: " + task + ". Reason: " + e, e);
 		}
 	}
 

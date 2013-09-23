@@ -37,6 +37,8 @@ public class Anteater {
 		NativeArray args = (NativeArray) functionParams[1];
 		if ("prop".equals(methodName)) {
 			return getProp(args);
+		} else if ("executeTarget".equals(methodName)) {
+			return executeTarget(args);
 		}
 
 		NestedContainer container = new NestedContainer();
@@ -76,6 +78,19 @@ public class Anteater {
 		arguments.add(container);
 		ant.invokeMethod(methodName, arguments.toArray());
 		return false;
+	}
+
+	private Object executeTarget(NativeArray args) throws InvalidArguments {
+		if (args.size() != 1) {
+			throw new InvalidArguments("Invalid number of parameters in call of the executeTarget function.");
+		}
+
+		Object object = args.get(0);
+		if (!(object instanceof String)) {
+			throw new InvalidArguments("Invalid arguments in call of executeTarget function.");
+		}
+		ant.getProject().executeTarget((String) object);
+		return null;
 	}
 
 	private void getScriptableParams(Scriptable thisObj, String myName, Scriptable object, NestedContainer parent) {
