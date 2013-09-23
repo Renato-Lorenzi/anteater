@@ -35,12 +35,17 @@ public class Anteater {
 	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {
 		String methodName = (String) functionParams[0];
 		NativeArray args = (NativeArray) functionParams[1];
+
 		if ("prop".equals(methodName)) {
 			return getProp(args);
 		} else if ("executeTarget".equals(methodName)) {
 			return executeTarget(args);
 		}
 
+		return executeDefaultTask(cx, thisObj, methodName, args);
+	}
+
+	private Object executeDefaultTask(Context cx, Scriptable thisObj, String methodName, NativeArray args) throws InvalidArguments, MissingMethodException {
 		NestedContainer container = new NestedContainer();
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		HashMap<String, Object> params = new HashMap<String, Object>();

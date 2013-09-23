@@ -125,6 +125,21 @@ public class AnteaterScriptTest {
 
 	}
 
+	@Test
+	public void testImport() {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		AnteaterScript script = new AnteaterScript();
+		script.execute(new String[] { TEST_RES + "importMain.js" });
+
+		assertFile(outFile, inFile);
+		assertFile(outFile1, inFile1);
+
+	}
+
 	private void assertFile(File outFile, File inFile) {
 		assertTrue("The file should be found", outFile.exists());
 		assertEquals("The file size should be equals", inFile.length(), outFile.length());
