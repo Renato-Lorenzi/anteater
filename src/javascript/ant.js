@@ -3,7 +3,7 @@ function Ant() {
 }
 
 function noMethod(name, args) {
-	executeAnt(name, args);
+	return executeAnt(name, args);
 }
 
 ant = new Ant();

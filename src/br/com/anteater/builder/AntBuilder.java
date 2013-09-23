@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package br.com.anteater;
+package br.com.anteater.builder;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -48,17 +48,13 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.sun.org.apache.xml.internal.utils.QName;
-
 /**
  * Allows <a href="http://ant.apache.org/manual/coretasklist.html">Ant tasks</a>
- * to
- * be used with a Groovy builder-style markup. Requires that {{ant.jar}} is on
- * your classpath which will
- * happen automatically if you are using the Groovy distribution but will be up
- * to you to organize if you are embedding Groovy. If you wish to use the
- * <a href="http://ant.apache.org/manual/install#optionalTasks">optional
- * tasks</a>
+ * to be used with a Groovy builder-style markup. Requires that {{ant.jar}} is
+ * on your classpath which will happen automatically if you are using the Groovy
+ * distribution but will be up to you to organize if you are embedding Groovy.
+ * If you wish to use the <a
+ * href="http://ant.apache.org/manual/install#optionalTasks">optional tasks</a>
  * you will need to add one or more additional jars from the ant distribution to
  * your classpath - see the <a
  * href="http://ant.apache.org/manual/install.html#librarydependencies">library
@@ -105,9 +101,10 @@ public class AntBuilder extends BuilderSupport {
 		this.project = project;
 
 		/*
-		 * GROOVY-4524: The following is not needed anymore as an ant Project already by default has inputhandler
-		 * set to DefaultInputHandler. And if it is again set here, it mistakenly overrides the custom input handler
-		 * if set using -inputhandler switch. 
+		 * GROOVY-4524: The following is not needed anymore as an ant Project
+		 * already by default has inputhandler set to DefaultInputHandler. And
+		 * if it is again set here, it mistakenly overrides the custom input
+		 * handler if set using -inputhandler switch.
 		 */
 		// this.project.setInputHandler(new DefaultInputHandler());
 
@@ -140,14 +137,14 @@ public class AntBuilder extends BuilderSupport {
 		ue.setTaskName(parentTask.getTaskName());
 		ue.setLocation(parentTask.getLocation());
 		ue.setOwningTarget(parentTask.getOwningTarget());
-		ue.setRuntimeConfigurableWrapper(parentTask.getRuntimeConfigurableWrapper());
+		ue.setRuntimeConfigurableWrapper(parentTask
+				.getRuntimeConfigurableWrapper());
 		parentTask.getRuntimeConfigurableWrapper().setProxy(ue);
 		antXmlContext.pushWrapper(parentTask.getRuntimeConfigurableWrapper());
 	}
 
 	/**
-	 * #
-	 * Gets the Ant project in which the tasks are executed
+	 * # Gets the Ant project in which the tasks are executed
 	 * 
 	 * @return the project
 	 */
@@ -175,9 +172,9 @@ public class AntBuilder extends BuilderSupport {
 	}
 
 	/**
-	 * Indicates that we save stdin, stdout, stderr and replace them
-	 * while AntBuilder is executing tasks with
-	 * streams that funnel the normal streams into Ant's logs.
+	 * Indicates that we save stdin, stdout, stderr and replace them while
+	 * AntBuilder is executing tasks with streams that funnel the normal streams
+	 * into Ant's logs.
 	 * 
 	 * @param saveStreams
 	 *            set to false to disable this behavior
@@ -224,7 +221,8 @@ public class AntBuilder extends BuilderSupport {
 	 * @see groovy.util.BuilderSupport#doInvokeMethod(java.lang.String,
 	 *      java.lang.Object, java.lang.Object)
 	 */
-	protected Object doInvokeMethod(String methodName, Object name, Object args) throws MissingMethodException {
+	protected Object doInvokeMethod(String methodName, Object name, Object args)
+			throws MissingMethodException {
 		super.doInvokeMethod(methodName, name, (List<Object>) args);
 
 		// return the completed node
@@ -233,11 +231,9 @@ public class AntBuilder extends BuilderSupport {
 
 	/**
 	 * Determines, when the ANT Task that is represented by the "node" should
-	 * perform.
-	 * Node must be an ANT Task or no "perform" is called.
-	 * If node is an ANT Task, it performs right after complete construction.
-	 * If node is nested in a TaskContainer, calling "perform" is delegated to
-	 * that
+	 * perform. Node must be an ANT Task or no "perform" is called. If node is
+	 * an ANT Task, it performs right after complete construction. If node is
+	 * nested in a TaskContainer, calling "perform" is delegated to that
 	 * TaskContainer.
 	 * 
 	 * @param parent
@@ -262,7 +258,8 @@ public class AntBuilder extends BuilderSupport {
 			final String taskName = task.getTaskName();
 
 			if ("antcall".equals(taskName) && parent == null) {
-				throw new BuildException("antcall not supported within AntBuilder, consider using 'ant.project.executeTarget('targetName')' instead.");
+				throw new BuildException(
+						"antcall not supported within AntBuilder, consider using 'ant.project.executeTarget('targetName')' instead.");
 			}
 
 			if (saveStreams) {
@@ -271,7 +268,8 @@ public class AntBuilder extends BuilderSupport {
 					int currentStreamCount = streamCount++;
 					if (currentStreamCount == 0) {
 						// we are first, save the streams
-						savedProjectInputStream = project.getDefaultInputStream();
+						savedProjectInputStream = project
+								.getDefaultInputStream();
 						savedIn = System.in;
 						savedErr = System.err;
 						savedOut = System.out;
@@ -281,7 +279,8 @@ public class AntBuilder extends BuilderSupport {
 							demuxInputStream = new DemuxInputStream(project);
 							System.setIn(demuxInputStream);
 						}
-						demuxOutputStream = new DemuxOutputStream(project, false);
+						demuxOutputStream = new DemuxOutputStream(project,
+								false);
 						System.setOut(new PrintStream(demuxOutputStream));
 						demuxErrorStream = new DemuxOutputStream(project, true);
 						System.setErr(new PrintStream(demuxErrorStream));
@@ -313,7 +312,8 @@ public class AntBuilder extends BuilderSupport {
 		try {
 			// Have to call fireTestStared/fireTestFinished via reflection as
 			// they unfortunately have protected access in Project
-			final Method fireTaskStarted = Project.class.getDeclaredMethod("fireTaskStarted", Task.class);
+			final Method fireTaskStarted = Project.class.getDeclaredMethod(
+					"fireTaskStarted", Task.class);
 			fireTaskStarted.setAccessible(true);
 			fireTaskStarted.invoke(project, task);
 
@@ -343,7 +343,9 @@ public class AntBuilder extends BuilderSupport {
 			throw ex;
 		} finally {
 			try {
-				final Method fireTaskFinished = Project.class.getDeclaredMethod("fireTaskFinished", Task.class, Throwable.class);
+				final Method fireTaskFinished = Project.class
+						.getDeclaredMethod("fireTaskFinished", Task.class,
+								Throwable.class);
 				fireTaskFinished.setAccessible(true);
 				fireTaskFinished.invoke(project, task, reason);
 			} catch (Exception e) {
@@ -383,7 +385,8 @@ public class AntBuilder extends BuilderSupport {
 			final Map.Entry entry = (Map.Entry) o;
 			final String attributeName = (String) entry.getKey();
 			final String attributeValue = String.valueOf(entry.getValue());
-			attr.addAttribute(null, attributeName, attributeName, "CDATA", attributeValue);
+			attr.addAttribute(null, attributeName, attributeName, "CDATA",
+					attributeValue);
 		}
 		return attr;
 	}
@@ -394,11 +397,11 @@ public class AntBuilder extends BuilderSupport {
 		String tagName = name.toString();
 		String ns = "";
 
-		if (name instanceof QName) {
-			QName q = (QName) name;
-			tagName = q.getLocalPart();
-			ns = q.getNamespaceURI();
-		}
+		// if (name instanceof QName) {
+		// QName q = (QName) name;
+		// tagName = q.getLocalPart();
+		// ns = q.getNamespaceURI();
+		// }
 
 		// import can be used only as top level element
 		if ("import".equals(name)) {
@@ -408,27 +411,33 @@ public class AntBuilder extends BuilderSupport {
 		}
 
 		try {
-			antElementHandler.onStartElement(ns, tagName, tagName, attrs, antXmlContext);
+			antElementHandler.onStartElement(ns, tagName, tagName, attrs,
+					antXmlContext);
 		} catch (final SAXParseException e) {
 			log.log(Level.SEVERE, "Caught: " + e, e);
 		}
 
 		insideTask = true;
-		final RuntimeConfigurable wrapper = (RuntimeConfigurable) antXmlContext.getWrapperStack().lastElement();
+		final RuntimeConfigurable wrapper = (RuntimeConfigurable) antXmlContext
+				.getWrapperStack().lastElement();
 		return wrapper.getProxy();
 	}
 
-	private Target onStartTarget(final Attributes attrs, String tagName, String ns) {
+	private Target onStartTarget(final Attributes attrs, String tagName,
+			String ns) {
 		final Target target = new Target();
 		target.setProject(project);
 		target.setLocation(new Location(antXmlContext.getLocator()));
 		try {
-			antTargetHandler.onStartElement(ns, tagName, tagName, attrs, antXmlContext);
-			final Target newTarget = (Target) getProject().getTargets().get(attrs.getValue("name"));
+			antTargetHandler.onStartElement(ns, tagName, tagName, attrs,
+					antXmlContext);
+			final Target newTarget = (Target) getProject().getTargets().get(
+					attrs.getValue("name"));
 
 			// execute dependencies (if any)
 			final Vector targets = new Vector();
-			for (final Enumeration deps = newTarget.getDependencies(); deps.hasMoreElements();) {
+			for (final Enumeration deps = newTarget.getDependencies(); deps
+					.hasMoreElements();) {
 				final String targetName = (String) deps.nextElement();
 				targets.add(project.getTargets().get(targetName));
 			}
@@ -445,9 +454,11 @@ public class AntBuilder extends BuilderSupport {
 	protected void setText(Object task, String text) {
 		final char[] characters = text.toCharArray();
 		try {
-			antElementHandler.characters(characters, 0, characters.length, antXmlContext);
+			antElementHandler.characters(characters, 0, characters.length,
+					antXmlContext);
 		} catch (final SAXParseException e) {
-			log.log(Level.WARNING, "SetText failed: " + task + ". Reason: " + e, e);
+			log.log(Level.WARNING,
+					"SetText failed: " + task + ". Reason: " + e, e);
 		}
 	}
 
@@ -457,8 +468,8 @@ public class AntBuilder extends BuilderSupport {
 }
 
 /**
- * Would be nice to retrieve location information (from AST?).
- * In a first time, without info
+ * Would be nice to retrieve location information (from AST?). In a first time,
+ * without info
  */
 class AntBuilderLocator implements Locator {
 	public int getColumnNumber() {

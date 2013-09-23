@@ -1,4 +1,4 @@
-package br.com.anteater;
+package br.com.anteater.builder;
 
 public class MissingMethodException extends Exception {
 

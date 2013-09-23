@@ -1,3 +1,5 @@
+package com.jant.ant;
+
 /* -*- Mode: java; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -26,11 +28,6 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
-
-import com.jant.ant.AntExecute;
-import com.jant.ant.AntWrapperExecute;
-import com.jant.ant.EspecialFunctions;
-import com.sun.xml.internal.bind.marshaller.XMLWriter;
 
 /**
  * The shell program.
@@ -66,8 +63,10 @@ public class Shell extends ScriptableObject {
 
 			// Define some global functions particular to the shell. Note
 			// that these functions are not part of ECMA.
-			String[] names = { "print", "quit", "version", "load", "help", "executeAnt" };
-			shell.defineFunctionProperties(names, Shell.class, ScriptableObject.DONTENUM);
+			String[] names = { "print", "quit", "version", "load", "help",
+					"executeAnt" };
+			shell.defineFunctionProperties(names, Shell.class,
+					ScriptableObject.DONTENUM);
 
 			args = processOptions(cx, args);
 
@@ -82,7 +81,8 @@ public class Shell extends ScriptableObject {
 				System.arraycopy(args, 1, array, 0, length);
 			}
 			Scriptable argsObj = cx.newArray(shell, array);
-			shell.defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
+			shell.defineProperty("arguments", argsObj,
+					ScriptableObject.DONTENUM);
 
 			shell.processSource(cx, "src/javascript/ant.js");
 			shell.processSource(cx, args.length == 0 ? null : args[0]);
@@ -159,7 +159,8 @@ public class Shell extends ScriptableObject {
 	 * of arguments supplied to the JavaScript function.
 	 * 
 	 */
-	public static void print(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static void print(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) {
 		for (int i = 0; i < args.length; i++) {
 			if (i > 0)
 				System.out.print(" ");
@@ -167,7 +168,8 @@ public class Shell extends ScriptableObject {
 			// Convert the arbitrary JavaScript value into a string form.
 			// String s = Context.toString(args[i]);
 
-			System.out.println(Context.toObject(args[i], thisObj).getClassName());
+			System.out.println(Context.toObject(args[i], thisObj)
+					.getClassName());
 
 		}
 		System.out.println();
@@ -189,7 +191,8 @@ public class Shell extends ScriptableObject {
 	 * 
 	 * This method is defined as a JavaScript function.
 	 */
-	public static double version(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static double version(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) {
 		double result = cx.getLanguageVersion();
 		if (args.length > 0) {
 			double d = Context.toNumber(args[0]);
@@ -204,7 +207,8 @@ public class Shell extends ScriptableObject {
 	 * This method is defined as a JavaScript function.
 	 * 
 	 */
-	public static void load(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static void load(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) {
 		Shell shell = (Shell) getTopLevelScope(thisObj);
 		for (int i = 0; i < args.length; i++) {
 			shell.processSource(cx, Context.toString(args[i]));
@@ -221,7 +225,8 @@ public class Shell extends ScriptableObject {
 	 */
 	private void processSource(Context cx, String filename) {
 		if (filename == null) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					System.in));
 			String sourceName = "<stdin>";
 			int lineno = 1;
 			boolean hitEOF = false;
@@ -250,7 +255,8 @@ public class Shell extends ScriptableObject {
 						if (cx.stringIsCompilableUnit(source))
 							break;
 					}
-					Object result = cx.evaluateString(this, source, sourceName, startline, null);
+					Object result = cx.evaluateString(this, source, sourceName,
+							startline, null);
 					if (result != Context.getUndefinedValue()) {
 						System.err.println(Context.toString(result));
 					}
@@ -309,7 +315,8 @@ public class Shell extends ScriptableObject {
 
 	static AntWrapperExecute exec = new AntWrapperExecute();
 
-	public static boolean e(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static boolean e(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		NativeArray nativeArray = (NativeArray) args[1];
 		if (nativeArray.size() > 0) {
@@ -341,12 +348,16 @@ public class Shell extends ScriptableObject {
 	 * 
 	 */
 
-	public static boolean executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static boolean executeAnt(Context cx, Scriptable thisObj,
+			Object[] args, Function funObj) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		NativeArray nativeArray = (NativeArray) args[1];
 		if (nativeArray.size() > 0) {
 			Object natObj = nativeArray.get(0);
-			if (natObj instanceof Scriptable) {
+			if (natObj instanceof Function) {
+				Function func = (Function) natObj;
+				func.call(cx, thisObj, thisObj, new Object[] {});
+			} else if (natObj instanceof Scriptable) {
 				StringBuilder sb = new StringBuilder();
 				go((Scriptable) natObj, Context.toString(args[0]), sb);
 				System.out.println(sb);
