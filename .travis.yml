@@ -5,6 +5,6 @@ jdk:
   - openjdk6
   
 before_script:
- - chmod +x anteater
+ - chmod +x ./anteater.sh
 
-script: "./anteater build.js"
+script: "./anteater.sh build.js"
