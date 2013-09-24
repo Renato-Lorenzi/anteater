@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="test" name="anteater">
+
+	<!-- ponto de partida -->
+	<target name="test">
+		<!--
+		<junit printsummary="yes" fork="yes">
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar" />
+					<exclude name="**/*ant*.jar" />
+				</fileset>
+				<dirset dir="bin">
+					<include name="**/*" />
+				</dirset>
+			</classpath>
+			<formatter type="plain" />
+			<test name="br.com.anteater.script.AnteaterScriptTest" outfile="test.xml">
+				<formatter type="xml" />
+			</test>
+		</junit> -->
+		<echo>${basedir}</echo>
+		<exec command="java -cp lib/js-14.jar:lib/ant1.9.2.jar:lib/ant-launcher.jar:jar/anteater.jar  br.com.anteater.main.Main build.js">
+		</exec>
+	</target>
+
+</project>

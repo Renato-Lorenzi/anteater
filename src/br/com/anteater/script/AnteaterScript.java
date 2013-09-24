@@ -1,10 +1,11 @@
 package br.com.anteater.script;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
@@ -64,7 +65,7 @@ public class AnteaterScript extends ScriptableObject {
 				Scriptable argsObj = cx.newArray(shell, array);
 				shell.defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
 
-				shell.processSource(cx, "src/javascript/ant.js");
+				shell.processSource(cx, "ant.js");
 				shell.processSource(cx, args.length == 0 ? null : args[0]);
 			} finally {
 				Context.exit();
@@ -259,10 +260,11 @@ public class AnteaterScript extends ScriptableObject {
 			} while (!hitEOF);
 			System.err.println();
 		} else {
-			FileReader in = null;
+			Reader in = null;
 			try {
-				in = new FileReader(filename);
-			} catch (FileNotFoundException ex) {
+				File file = new File(filename);
+				in = file.exists() ? new FileReader(file) : new InputStreamReader(getClass().getResourceAsStream(filename));
+			} catch (Exception ex) {
 				Context.reportError("Couldn't open file \"" + filename + "\".");
 				return;
 			}
