@@ -1,5 +1,6 @@
 var pathId = "class-path-id";
-var testClasspath = {
+
+ant.path({
 	id : pathId,
 	fileset : [ {
 		dir : "lib",
@@ -13,23 +14,42 @@ var testClasspath = {
 		dir : "bin",
 		includes : "**"
 	}
-};
+});
 
+/**
+ * Compile all src and tests resources
+ */
 ant.javac({
 	srcdir : "src",
-	classpath : testClasspath
+	destdir : "bin",
+	classpath : {
+		refid : pathId
+	}
+});
+
+ant.javac({
+	srcdir : "tests",
+	destdir : "bin",
+	classpath : {
+		refid : pathId
+	}
 });
 
 ant.taskdef({
 	name : "junit",
 	classname : "org.apache.tools.ant.taskdefs.optional.junit.JUnitTask",
-	classpath : testClasspath
+	classpath : {
+		refid : pathId
+	}
 });
 
 ant.junit({
 	printsummary : "yes",
 	fork : "yes",
-	classpath : testClasspath,
+	showoutput : "true",
+	classpath : {
+		refid : pathId
+	},
 	formatter : {
 		type : "xml"
 	},
@@ -39,31 +59,21 @@ ant.junit({
 	}
 });
 
-echoPath(pathId);
-
-/**
- * Command used to generate anteater.jar
- */
-function generateAnteater() {
-	ant.jar({
-		destfile : "jar/test.jar",
-		basedir : "bin",
-		excludes : "**/Test.class"
-	});
-}
-
 /**
  * Echo path
  * 
  * @param classpathId
  */
 function echoPath(classpathId) {
-	var outprop = "echo-path";
+	ant.echo("This path: ");
+	ant.echo(pathToStr(classpathId));
+}
 
+function pathToStr(classpathId) {
+	var outprop = "echo-path";
 	ant.pathconvert({
 		property : outprop,
 		refid : classpathId
 	});
-	ant.echo("This path: ");
-	ant.echo(ant.prop(outprop));
+	return ant.prop(outprop);
 }

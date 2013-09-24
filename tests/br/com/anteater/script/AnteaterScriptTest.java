@@ -1,20 +1,18 @@
 package br.com.anteater.script;
 
-import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AnteaterScriptTest {
+public class AnteaterScriptTest extends TestCase {
 
 	public static final String TEST_RES = "test-resources/";
 	public static final String IN_DIR = TEST_RES + "in/";
@@ -23,7 +21,7 @@ public class AnteaterScriptTest {
 	File tempScript;
 
 	@Before
-	public void setup() throws IOException {
+	public void setUp() throws IOException {
 		tempScript = File.createTempFile("script-test", ".js");
 		if (outDirFile.exists()) {
 			clearDir(outDirFile);
@@ -37,7 +35,7 @@ public class AnteaterScriptTest {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
-		writeScript("ant.copy({file : '%s', tofile : '%s'});", inFile.getAbsolutePath(), outFile.getAbsolutePath());
+		writeScript("ant.copy({file : '%s', tofile : '%s'});", resolveDir(inFile.getAbsolutePath()), resolveDir(outFile.getAbsolutePath()));
 
 		AnteaterScript script = new AnteaterScript();
 		script.execute(new String[] { tempScript.getAbsolutePath() });
@@ -114,7 +112,7 @@ public class AnteaterScriptTest {
 		File inFile = new File(IN_DIR + "file.txt");
 
 		StringBuilder scrp = new StringBuilder();
-		scrp.append(format("ant.property({file: '%s'});\n", TEST_RES + "prop.properties")).//
+		scrp.append(String.format("ant.property({file: '%s'});\n", TEST_RES + "prop.properties")).//
 				append("ant.copy({file : '${in.file}', tofile : ant.prop('out.file')});");
 		writeScript(scrp.toString());
 
@@ -161,7 +159,7 @@ public class AnteaterScriptTest {
 		try {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				writer.write(format(line, args) + "\n");
+				writer.write(String.format(line, args) + "\n");
 			}
 
 		} finally {
@@ -173,14 +171,18 @@ public class AnteaterScriptTest {
 	public void writeScript(String script, Object... args) throws IOException {
 		FileWriter writer = new FileWriter(tempScript);
 		try {
-			writer.write(format(script, args));
+			writer.write(String.format(script, args));
 		} finally {
 			writer.close();
 		}
 	}
 
+	public String resolveDir(String dir) {
+		return dir == null ? "" : dir.replace("\\", "/");
+	}
+
 	@After
-	public void after() {
+	public void tearDown() {
 		tempScript.delete();
 		clearDir(outDirFile);
 	}

@@ -41,7 +41,6 @@ public class Anteater {
 		} else if ("executeTarget".equals(methodName)) {
 			return executeTarget(args);
 		}
-
 		return executeDefaultTask(cx, thisObj, methodName, args);
 	}
 

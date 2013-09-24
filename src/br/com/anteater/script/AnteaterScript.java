@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -11,6 +12,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
@@ -47,7 +49,7 @@ public class AnteaterScript extends ScriptableObject {
 
 				// Define some global functions particular to the shell. Note
 				// that these functions are not part of ECMA.
-				String[] names = { "print", "quit", "version", "load", "help", "executeAnt" };
+				String[] names = { "print", "quit", "version", "load", "help", "executeAnt", "shellExec" };
 				shell.defineFunctionProperties(names, AnteaterScript.class, ScriptableObject.DONTENUM);
 
 				args = processOptions(cx, args);
@@ -65,7 +67,7 @@ public class AnteaterScript extends ScriptableObject {
 				Scriptable argsObj = cx.newArray(shell, array);
 				shell.defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
 
-				shell.processSource(cx, "ant.js");
+				shell.processSource(cx, "script/ant.js");
 				shell.processSource(cx, args.length == 0 ? null : args[0]);
 			} finally {
 				Context.exit();
@@ -263,7 +265,7 @@ public class AnteaterScript extends ScriptableObject {
 			Reader in = null;
 			try {
 				File file = new File(filename);
-				in = file.exists() ? new FileReader(file) : new InputStreamReader(getClass().getResourceAsStream(filename));
+				in = file.exists() ? new FileReader(file) : new InputStreamReader(getClass().getClassLoader().getResourceAsStream(filename));
 			} catch (Exception ex) {
 				Context.reportError("Couldn't open file \"" + filename + "\".");
 				return;
@@ -308,7 +310,52 @@ public class AnteaterScript extends ScriptableObject {
 
 	public static Object executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws MissingMethodException, InvalidArguments {
 		return anteater.exec(cx, thisObj, args, funObj);
+	}
 
+	/**
+	 * @throws InvalidArguments
+	 * @throws MissingMethodException
+	 * @throws InterruptedException
+	 * @throws IOException
+	 * 
+	 * 
+	 */
+
+	public static Object shellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws MissingMethodException, InvalidArguments, IOException, InterruptedException {
+		String exeName = (String) args[0];
+		String cmdLine = exeName;
+		NativeArray array = (NativeArray) args[1];
+		for (Object param : array) {
+			cmdLine += " " + (String) param;
+		}
+		return execCMD("[shell " + exeName + "] ", cmdLine);
+	}
+
+	public static int execCMD(final String prefix, String cmdLine) throws IOException, InterruptedException {
+		Process process = Runtime.getRuntime().exec(cmdLine);
+		InputStream stdout = process.getInputStream();
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
+		final BufferedReader readerError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+		new Thread() {
+
+			@Override
+			public void run() {
+				String line;
+				try {
+					while ((line = reader.readLine()) != null) {
+						System.out.println(prefix + line);
+					}
+
+					while ((line = readerError.readLine()) != null) {
+						System.err.println(prefix + "ERROR: " + line);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}.start();
+		return process.waitFor();
 	}
 
 }
