@@ -4,4 +4,4 @@ jdk:
   - openjdk7
   - openjdk6
 
-script: "anteater build.js"
+script: "anteater.sh build.js"
