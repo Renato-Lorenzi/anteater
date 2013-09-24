@@ -3,5 +3,8 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
+  
+before_script:
+ - chmod +x anteater
 
-script: "anteater.sh build.js"
+script: "./anteater build.js"
