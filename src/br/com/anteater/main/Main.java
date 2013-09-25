@@ -11,6 +11,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		ScriptBase script = args.length > 0 ? new BuildScript() : new InteractiveScript();
-		script.execute(args);
+		int exitCode = script.execute(args);
+		if (exitCode != 0) {
+			System.exit(exitCode);
+		}
 	}
 }
