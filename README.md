@@ -92,28 +92,6 @@ First, if you saw the var declaration and are asking yourself if you can use eve
 
 So, now about the function, to call it is pretty more simple too. Since to call macrodef you must call a taskdef loaded to the ant context, like `<compile project="xalala" />` in ant, what doing a js function must be done just calling `compile("xalala")`.
 
-But if, for some very strange reason, you want to use macrodefs, you can do it as well. Then, the same xml macrodef above, will be right this in anteater:
-
-```javascript
-ant.macrodef({
-  name: "compile",
-  attribute: {
-    name: "project"
-  }
-},
-ant.sequential(function(){
-  ant.javac({
-    srcdir: "@{project}/src",
-    destdir: "@{project}/bin",
-    classpath: "xyz.jar",
-    debug: "on",
-    source: "1.4"
-  });
-}));
-```
-
-Got it?
-
 ### Targets
 
 Targets is a nice feature of ant right? Modularize your builds and specify what to execute is pretty awesome feature. And you can do it as well:
@@ -128,11 +106,10 @@ Must be done with:
 
 ```javascript
 ant.target({
-  name: "build"
-},
-ant.sequential(function(){
-  ant.mkdir({dir: "xororo"});
-}));
+    name: "build"
+  }, function(){
+    ant.mkdir({dir: "xororo"});
+  });
 ```
 
 ### JS advantages
