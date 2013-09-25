@@ -5,6 +5,7 @@ jdk:
   - openjdk6
   
 before_script:
+ - rm bin -r
  - mkdir bin
 
 script: "./anteater.sh build.js"
