@@ -3,10 +3,7 @@
 
 	<!-- ponto de partida -->
 	<target name="main">
-		<!--<echo>teste</echo>-->
-		<fileset dir="${basedir}/lib">
-			<include name="**.jar" />
-		</fileset>
+		<fail message="error" />
 	</target>
 
 </project>

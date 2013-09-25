@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="nbrenatol" name="br.com.anteater.script.AnteaterScriptTest" skipped="0" tests="8" time="2.207" timestamp="2013-09-24T22:20:17">
+<testsuite errors="0" failures="0" hostname="nbrenatol" name="br.com.anteater.script.AnteaterScriptTest" skipped="0" tests="8" time="2.027" timestamp="2013-09-25T02:32:22">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-7-openjdk/jre/lib/amd64" />
@@ -40,7 +40,7 @@
     <property name="java.class.path" value="/home/renatol/git/anteater/lib/ant-junit4.jar:/home/renatol/git/anteater/lib/ant-launcher.jar:/home/renatol/git/anteater/lib/js-14.jar:/home/renatol/git/anteater/lib/tools.jar:/home/renatol/git/anteater/lib-test/ant-junit.jar:/home/renatol/git/anteater/lib-test/junit.jar:/home/renatol/git/anteater/bin:/home/renatol/git/anteater/bin/br:/home/renatol/git/anteater/bin/br/com:/home/renatol/git/anteater/bin/br/com/anteater:/home/renatol/git/anteater/bin/br/com/anteater/builder:/home/renatol/git/anteater/bin/br/com/anteater/builder/nested:/home/renatol/git/anteater/bin/br/com/anteater/main:/home/renatol/git/anteater/bin/br/com/anteater/script:/home/renatol/git/anteater/lib/ant1.9.2.jar" />
     <property name="user.name" value="renatol" />
     <property name="java.vm.specification.version" value="1.7" />
-    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner br.com.anteater.script.AnteaterScriptTest filtertrace=true haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/renatol/git/anteater/temp/test.xml.xml crashfile=/home/renatol/git/anteater/junitvmwatcher6262971679435984734.properties propsfile=/home/renatol/git/anteater/junit4193637449558005089.properties" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner br.com.anteater.script.AnteaterScriptTest filtertrace=true haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/renatol/git/anteater/temp/test.xml.xml crashfile=/home/renatol/git/anteater/junitvmwatcher7088902750861081249.properties propsfile=/home/renatol/git/anteater/junit7564654674958221536.properties" />
     <property name="java.home" value="/usr/lib/jvm/java-7-openjdk/jre" />
     <property name="sun.arch.data.model" value="64" />
     <property name="java.specification.vendor" value="Oracle Corporation" />
@@ -58,25 +58,25 @@
     <property name="sun.desktop" value="gnome" />
     <property name="sun.cpu.isalist" value="" />
   </properties>
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testBasic" time="0.883" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTarget" time="0.202" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTaskContainer" time="0.163" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testProp" time="0.159" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithChild" time="0.328" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithArray" time="0.125" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObject" time="0.123" />
-  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testImport" time="0.122" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testProp" time="0.822" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testImport" time="0.215" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObject" time="0.241" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithChild" time="0.184" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithArray" time="0.122" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTarget" time="0.115" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTaskContainer" time="0.104" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testBasic" time="0.08" />
   <system-out><![CDATA[     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
-test-target:
-     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
-     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
-     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
-     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
-     [copy] Copying 2 files to /home/renatol/git/anteater/test-resources/out
-     [copy] Copying 4 files to /home/renatol/git/anteater/test-resources/out
 importxml.copy-file1:
      [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
 copy-file:
+     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
+     [copy] Copying 4 files to /home/renatol/git/anteater/test-resources/out
+     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
+     [copy] Copying 2 files to /home/renatol/git/anteater/test-resources/out
+test-target:
+     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
+     [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
      [copy] Copying 1 file to /home/renatol/git/anteater/test-resources/out
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>

@@ -1,5 +1,4 @@
 var pathId = "class-path-id";
-
 ant.path({
 	id : pathId,
 	fileset : [ {

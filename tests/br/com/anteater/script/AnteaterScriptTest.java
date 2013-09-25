@@ -37,7 +37,7 @@ public class AnteaterScriptTest extends TestCase {
 
 		writeScript("ant.copy({file : '%s', tofile : '%s'});", resolveDir(inFile.getAbsolutePath()), resolveDir(outFile.getAbsolutePath()));
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { tempScript.getAbsolutePath() });
 
 		assertFile(outFile, inFile);
@@ -52,7 +52,7 @@ public class AnteaterScriptTest extends TestCase {
 
 		writeScript("ant.copy({todir: '%s', fileset: {dir: '%s'}});", OUT_DIR, IN_DIR);
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { tempScript.getAbsolutePath() });
 
 		assertFile(outFile, inFile);
@@ -64,7 +64,7 @@ public class AnteaterScriptTest extends TestCase {
 		File outFile = new File(OUT_DIR + "nestedWithChild.txt");
 		File inFile = new File(IN_DIR + "nestedWithChildRet.txt");
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { TEST_RES + "nestedWithChild.js" });
 
 		assertFile(outFile, inFile);
@@ -77,7 +77,7 @@ public class AnteaterScriptTest extends TestCase {
 		File inFile = new File(IN_DIR + "file.txt");
 		File inFile1 = new File(IN_DIR + "file1.txt");
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { TEST_RES + "nestedObjectWithArray.js" });
 
 		assertFile(outFile, inFile);
@@ -89,7 +89,7 @@ public class AnteaterScriptTest extends TestCase {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { TEST_RES + "target.js" });
 
 		assertFile(outFile, inFile);
@@ -100,7 +100,7 @@ public class AnteaterScriptTest extends TestCase {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { TEST_RES + "taskContainer.js" });
 
 		assertFile(outFile, inFile);
@@ -116,7 +116,7 @@ public class AnteaterScriptTest extends TestCase {
 				append("ant.copy({file : '${in.file}', tofile : ant.prop('out.file')});");
 		writeScript(scrp.toString());
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { tempScript.getAbsolutePath() });
 
 		assertFile(outFile, inFile);
@@ -130,7 +130,7 @@ public class AnteaterScriptTest extends TestCase {
 		File inFile = new File(IN_DIR + "file.txt");
 		File inFile1 = new File(IN_DIR + "file1.txt");
 
-		AnteaterScript script = new AnteaterScript();
+		ScriptBase script = new BuildScript();
 		script.execute(new String[] { TEST_RES + "importMain.js" });
 
 		assertFile(outFile, inFile);

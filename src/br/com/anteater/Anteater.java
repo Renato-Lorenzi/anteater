@@ -81,7 +81,7 @@ public class Anteater {
 		}
 		arguments.add(container);
 		ant.invokeMethod(methodName, arguments.toArray());
-		return false;
+		return null;
 	}
 
 	private Object executeTarget(NativeArray args) throws InvalidArguments {
