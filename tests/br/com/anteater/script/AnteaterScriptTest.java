@@ -138,6 +138,20 @@ public class AnteaterScriptTest extends TestCase {
 
 	}
 
+	@Test
+	public void testMacrodef() throws IOException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "macrodef.js" });
+
+		assertFile(outFile, inFile);
+		assertFile(outFile1, inFile1);
+	}
+
 	private void assertFile(File outFile, File inFile) {
 		assertTrue("The file should be found", outFile.exists());
 		assertEquals("The file size should be equals", inFile.length(), outFile.length());
