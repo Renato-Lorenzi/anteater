@@ -1,5 +1,7 @@
 # anteater
 
+![Travis CI](https://api.travis-ci.org/Renato-Lorenzi/anteater.png)
+
 So, did you someday made an ant script?
 
 If didn't, luck for you. If yes, then you saw in person that XML is not, how can we say this, **A PROGRAMMIG LANGUAGE**! Seriously, sorry apache, but who had this idea? We really hope that they had a good reason for it, but we didn't find it.
