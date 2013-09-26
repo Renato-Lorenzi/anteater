@@ -18,7 +18,24 @@ import br.com.anteater.builder.nested.NestedParams;
 
 public class Anteater {
 
-	AntBuilder ant = new AntBuilder();
+	private AntBuilder ant = new AntBuilder();
+	private TargetManager targetManager = new TargetManager(ant.getProject());
+
+	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {
+		String methodName = (String) functionParams[0];
+		NativeArray args = (NativeArray) functionParams[1];
+
+		if ("prop".equals(methodName)) {
+			return getProp(args);
+		} else if ("executeTarget".equals(methodName)) {
+			targetManager.execute(cx, args);
+			return null;
+		} else if ("target".equals(methodName)) {
+			targetManager.addTarget(thisObj, args);
+			return null;
+		}
+		return executeDefaultTask(cx, thisObj, methodName, args);
+	}
 
 	public Object getProp(NativeArray args) throws InvalidArguments {
 		if (args.size() != 1) {
@@ -30,18 +47,6 @@ public class Anteater {
 			throw new InvalidArguments("Invalid arguments in call of prop function.");
 		}
 		return ant.getProject().getProperties().get(object);
-	}
-
-	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {
-		String methodName = (String) functionParams[0];
-		NativeArray args = (NativeArray) functionParams[1];
-
-		if ("prop".equals(methodName)) {
-			return getProp(args);
-		} else if ("executeTarget".equals(methodName)) {
-			return executeTarget(args);
-		}
-		return executeDefaultTask(cx, thisObj, methodName, args);
 	}
 
 	private Object executeDefaultTask(Context cx, Scriptable thisObj, String methodName, NativeArray args) throws InvalidArguments, MissingMethodException {
@@ -81,19 +86,6 @@ public class Anteater {
 		}
 		arguments.add(container);
 		ant.invokeMethod(methodName, arguments.toArray());
-		return null;
-	}
-
-	private Object executeTarget(NativeArray args) throws InvalidArguments {
-		if (args.size() != 1) {
-			throw new InvalidArguments("Invalid number of parameters in call of the executeTarget function.");
-		}
-
-		Object object = args.get(0);
-		if (!(object instanceof String)) {
-			throw new InvalidArguments("Invalid arguments in call of executeTarget function.");
-		}
-		ant.getProject().executeTarget((String) object);
 		return null;
 	}
 

@@ -96,6 +96,34 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
+	public void testTargetWithDepends() throws IOException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "targetWithDepends.js" });
+
+		assertFile(outFile, inFile);
+		assertFile(outFile1, inFile1);
+	}
+
+	@Test
+	public void testTargetWithCircularReferences() throws IOException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "targetWithCircularReferences.js" });
+
+		assertNotExistsFile(outFile, inFile);
+		assertNotExistsFile(outFile1, inFile1);
+	}
+
+	@Test
 	public void testTaskContainer() throws IOException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -152,9 +180,15 @@ public class AnteaterScriptTest extends TestCase {
 		assertFile(outFile1, inFile1);
 	}
 
+	/******************* END TESTS *******************/
+
 	private void assertFile(File outFile, File inFile) {
 		assertTrue("The file should be found", outFile.exists());
 		assertEquals("The file size should be equals", inFile.length(), outFile.length());
+	}
+
+	private void assertNotExistsFile(File outFile, File inFile) {
+		assertFalse("The file should be found", outFile.exists());
 	}
 
 	public static void clearDir(File dir) {

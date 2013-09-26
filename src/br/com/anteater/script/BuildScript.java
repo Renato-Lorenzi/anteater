@@ -15,8 +15,11 @@ public class BuildScript extends AnteaterScript {
 	@Override
 	protected int doExecute(Context cx, String command) {
 		int exitCode = -1;
+		long startTime = System.currentTimeMillis();
 		try {
+			System.out.println("Buildfile: " + command);
 			processSource(cx, command);
+			System.out.println("BUILD SUCCESSFUL");
 			exitCode = 0;
 		} catch (WrappedException we) {
 			// Some form of exception was caught by JavaScript and
@@ -39,6 +42,7 @@ public class BuildScript extends AnteaterScript {
 			System.err.println("Unexpected: " + ex.getMessage());
 			ex.printStackTrace();
 		}
+		System.out.println("Total time: " + (System.currentTimeMillis() - startTime) + " milliseconds");
 		return exitCode;
 	}
 }

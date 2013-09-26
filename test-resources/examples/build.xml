@@ -3,7 +3,7 @@
 
 	<!-- ponto de partida -->
 	<target name="main">
-		<fail message="error" />
+		<echo>asdsad</echo>
 	</target>
 
 </project>

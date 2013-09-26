@@ -78,7 +78,7 @@ public abstract class ScriptBase extends ScriptableObject {
 	protected void printScriptStack(ScriptStackElement[] scriptStack, String msg) {
 		// Skip line 0 (ant.js)
 		if (scriptStack.length > 1) {
-			System.err.println(scriptStack[1] + msg != null ? ":" + msg : "");
+			System.err.println(scriptStack[1] + (msg != null ? " - " + msg : ""));
 			for (int i = 2; i < scriptStack.length; i++) {
 				System.err.println(scriptStack[i]);
 			}
