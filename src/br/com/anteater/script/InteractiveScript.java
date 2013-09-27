@@ -9,6 +9,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 /**
@@ -24,7 +25,7 @@ public class InteractiveScript extends AnteaterScript {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private boolean quitting;
+	private static boolean quitting;
 
 	@Override
 	protected int doExecute(Context cx, String command) {
@@ -89,6 +90,19 @@ public class InteractiveScript extends AnteaterScript {
 		return 0;
 	}
 
+	@Override
+	protected void defineFunctions() {
+		defineFunctionProperties(new String[] { "quit", "help", "executeAnt", "shellExec" }, InteractiveScript.class, ScriptableObject.DONTENUM);
+	}
+
+	public static Object executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		return AnteaterScript.executeAnt(cx, thisObj, args, funObj);
+	}
+
+	public static Object shellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		return AnteaterScript.shellExec(cx, thisObj, args, funObj);
+	}
+
 	/**
 	 * Quit the shell.
 	 * 
@@ -96,8 +110,7 @@ public class InteractiveScript extends AnteaterScript {
 	 * 
 	 * This method is defined as a JavaScript function.
 	 */
-	@Override
-	protected void doQuit(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static void quit(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		quitting = true;
 	}
 
@@ -106,8 +119,7 @@ public class InteractiveScript extends AnteaterScript {
 	 * 
 	 * This method is defined as a JavaScript function.
 	 */
-	@Override
-	protected void doHelp(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static void help(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		p("");
 		p("Command                Description");
 		p("=======                ===========");

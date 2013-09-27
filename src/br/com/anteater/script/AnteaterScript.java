@@ -30,7 +30,7 @@ public abstract class AnteaterScript extends ScriptBase {
 	protected static Anteater anteater = null;
 
 	public AnteaterScript() {
-		anteater = new Anteater();
+		anteater = new Anteater(this);
 	}
 
 	/**
@@ -39,8 +39,7 @@ public abstract class AnteaterScript extends ScriptBase {
 	 * 
 	 * 
 	 */
-	@Override
-	public Object doExecuteAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static Object executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		Object ret;
 		try {
 			ret = anteater.exec(cx, thisObj, args, funObj);
@@ -56,8 +55,7 @@ public abstract class AnteaterScript extends ScriptBase {
 	 * 
 	 * 
 	 */
-	@Override
-	public Object doShellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+	public static Object shellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
 		String exeName = (String) args[0];
 		String cmdLine = exeName;
 		NativeArray array = (NativeArray) args[1];
@@ -72,7 +70,7 @@ public abstract class AnteaterScript extends ScriptBase {
 		}
 	}
 
-	private int execCMD(final String prefix, String cmdLine) throws IOException, InterruptedException {
+	private static int execCMD(final String prefix, String cmdLine) throws IOException, InterruptedException {
 		Process process = Runtime.getRuntime().exec(cmdLine);
 		InputStream stdout = process.getInputStream();
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));

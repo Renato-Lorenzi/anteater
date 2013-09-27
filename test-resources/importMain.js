@@ -1,4 +1,7 @@
-load("test-resources/import.js");
+ant.import({
+	file : "test-resources/import.js",
+	as : "importjs"
+});
 
 ant.import({
 	file : "anteater/test-resources/import.xml",
@@ -6,4 +9,4 @@ ant.import({
 });
 
 ant.executeTarget("importxml.copy-file1");
-ant.executeTarget("copy-file");
+ant.executeTarget("importjs.copy-file");

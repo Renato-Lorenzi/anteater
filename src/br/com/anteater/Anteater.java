@@ -15,38 +15,25 @@ import br.com.anteater.builder.MissingMethodException;
 import br.com.anteater.builder.nested.NestedContainer;
 import br.com.anteater.builder.nested.NestedLambda;
 import br.com.anteater.builder.nested.NestedParams;
+import br.com.anteater.script.ScriptLoader;
+import br.com.anteater.tasks.AnteaterTasks;
+import br.com.anteater.tasks.TaskResult;
 
 public class Anteater {
 
 	private AntBuilder ant = new AntBuilder();
-	private TargetManager targetManager = new TargetManager(ant.getProject());
+	AnteaterTasks extendTasks;
+
+	public Anteater(ScriptLoader loader) {
+		super();
+		this.extendTasks = new AnteaterTasks(ant.getAntProject(), loader);
+	}
 
 	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {
 		String methodName = (String) functionParams[0];
 		NativeArray args = (NativeArray) functionParams[1];
-
-		if ("prop".equals(methodName)) {
-			return getProp(args);
-		} else if ("executeTarget".equals(methodName)) {
-			targetManager.execute(cx, args);
-			return null;
-		} else if ("target".equals(methodName)) {
-			targetManager.addTarget(thisObj, args);
-			return null;
-		}
-		return executeDefaultTask(cx, thisObj, methodName, args);
-	}
-
-	public Object getProp(NativeArray args) throws InvalidArguments {
-		if (args.size() != 1) {
-			throw new InvalidArguments("Invalid number of parameters in call of the prop function.");
-		}
-
-		Object object = args.get(0);
-		if (!(object instanceof String)) {
-			throw new InvalidArguments("Invalid arguments in call of prop function.");
-		}
-		return ant.getProject().getProperties().get(object);
+		TaskResult ret = extendTasks.execute(cx, thisObj, methodName, args);
+		return ret.isExecuted() ? ret.getResult() : executeDefaultTask(cx, thisObj, methodName, args);
 	}
 
 	private Object executeDefaultTask(Context cx, Scriptable thisObj, String methodName, NativeArray args) throws InvalidArguments, MissingMethodException {

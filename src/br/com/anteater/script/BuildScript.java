@@ -2,7 +2,10 @@ package br.com.anteater.script;
 
 import org.apache.tools.ant.BuildException;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 public class BuildScript extends AnteaterScript {
@@ -45,4 +48,19 @@ public class BuildScript extends AnteaterScript {
 		System.out.println("Total time: " + (System.currentTimeMillis() - startTime) + " milliseconds");
 		return exitCode;
 	}
+
+	@Override
+	protected void defineFunctions() {
+		defineFunctionProperties(new String[] { "executeAnt", "shellExec" }, BuildScript.class, ScriptableObject.DONTENUM);
+	}
+
+	public static Object executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		return AnteaterScript.executeAnt(cx, thisObj, args, funObj);
+	}
+
+	public static Object shellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		return AnteaterScript.shellExec(cx, thisObj, args, funObj);
+	}
+
+	
 }

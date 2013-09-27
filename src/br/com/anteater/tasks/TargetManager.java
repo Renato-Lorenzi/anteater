@@ -1,4 +1,4 @@
-package br.com.anteater;
+package br.com.anteater.tasks;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +10,8 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 
+import br.com.anteater.InvalidArguments;
+
 public class TargetManager {
 
 	private Project project;
@@ -20,9 +22,8 @@ public class TargetManager {
 		this.project = project;
 	}
 
-	public void addTarget(Scriptable thisObj, NativeArray args) {
-		// TODO Check projectName dependencies
-		AnteaterTarget anteaterTarget = new AnteaterTarget(null, thisObj, args);
+	public void addTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArguments {
+		AnteaterTarget anteaterTarget = new AnteaterTarget(projectName, thisObj, args);
 		String name = anteaterTarget.getName();
 		if (targets.containsKey(name)) {
 			throw new BuildException("Duplicate target " + name);
@@ -32,16 +33,9 @@ public class TargetManager {
 	}
 
 	public void execute(Context cx, NativeArray args) throws InvalidArguments {
-		if (args.size() != 1) {
-			throw new InvalidArguments("Invalid number of parameters in call of the executeTarget function.");
-		}
+		Checks.checkArgs(args, 1, String.class);
 
-		Object object = args.get(0);
-		if (!(object instanceof String)) {
-			throw new InvalidArguments("Invalid arguments in call of executeTarget function.");
-		}
-
-		String targetName = (String) object;
+		String targetName = (String) args.get(0);
 		HashSet<String> executed = new HashSet<String>();
 		HashSet<String> myDependents = new HashSet<String>();
 

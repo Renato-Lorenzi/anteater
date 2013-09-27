@@ -1,9 +1,11 @@
-package br.com.anteater;
+package br.com.anteater.tasks;
 
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+
+import br.com.anteater.InvalidArguments;
 
 /**
  * Anteater target is only "special" lambda functions
@@ -17,12 +19,15 @@ public class AnteaterTarget {
 	private Function lambda;
 	private String[] depends;
 
-	public AnteaterTarget(String projectName, Scriptable thisObj, NativeArray args) {
+	public AnteaterTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArguments {
 		super();
 		this.thisObj = thisObj;
-		// TODO Check params
+
+		Checks.checkArgs(args, 2, NativeObject.class, Function.class);
 		this.lambda = (Function) args.get(1);
 		NativeObject params = (NativeObject) args.get(0);
+
+		Checks.checkArgs(params, new String[] { "name" }, String.class);
 		name = (String) params.get("name");
 		String dependsStr = (String) params.get("depends");
 		depends = dependsStr != null && !dependsStr.equals("") ? dependsStr.split(",") : new String[] {};

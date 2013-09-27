@@ -20,10 +20,10 @@ import org.mozilla.javascript.ScriptableObject;
  * @author renatol
  * 
  */
-public abstract class ScriptBase extends ScriptableObject {
+public abstract class ScriptBase extends ScriptableObject implements ScriptLoader {
 
 	private static final long serialVersionUID = -5638074146250193112L;
-	private static ScriptBase self = null;
+	protected static ScriptBase self = null;
 
 	@Override
 	public String getClassName() {
@@ -44,7 +44,7 @@ public abstract class ScriptBase extends ScriptableObject {
 			// Initialize the standard objects (Object, Function, etc.)
 			// This must be done before scripts can be executed.
 			cx.initStandardObjects(this);
-			defineFunctionProperties(new String[] { "quit", "help", "load", "executeAnt", "shellExec" }, ScriptBase.class, ScriptableObject.DONTENUM);
+			defineFunctions();
 			args = processOptions(cx, args);
 
 			// Set up "arguments" in the global scope to contain the command
@@ -68,6 +68,8 @@ public abstract class ScriptBase extends ScriptableObject {
 		}
 		return exitCode;
 	}
+
+	protected abstract void defineFunctions();
 
 	/**
 	 * Print stack trace of js
@@ -146,66 +148,15 @@ public abstract class ScriptBase extends ScriptableObject {
 		}
 	}
 
-	private BuildException throwDontSupportedFunc() {
-		return new BuildException("Don't supported function.");
-	}
-
-	/*
-	 * 
-	 * 
-	 * 
-	 * Function implementation
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * *
-	 */
-
 	/**
 	 * Load and execute a set of JavaScript source files.
 	 * 
 	 * This method is defined as a JavaScript function.
 	 * 
 	 */
-	public static void load(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		ScriptBase shell = (ScriptBase) getTopLevelScope(thisObj);
-		for (int i = 0; i < args.length; i++) {
-			shell.processSource(cx, Context.toString(args[i]));
-		}
-	}
-
-	protected void doQuit(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		throw throwDontSupportedFunc();
-	}
-
-	protected void doHelp(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		throw throwDontSupportedFunc();
-	}
-
-	protected Object doShellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		throw throwDontSupportedFunc();
-	}
-
-	protected Object doExecuteAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		throw throwDontSupportedFunc();
-	}
-
-	public static void help(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		self.doHelp(cx, thisObj, args, funObj);
-	}
-
-	public static void quit(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		self.doQuit(cx, thisObj, args, funObj);
-	}
-
-	public static Object executeAnt(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		return self.doExecuteAnt(cx, thisObj, args, funObj);
-	}
-
-	public static Object shellExec(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		return self.doShellExec(cx, thisObj, args, funObj);
+	@Override
+	public void load(Context cx, String fileName) {
+		processSource(cx, fileName);
 	}
 
 }
