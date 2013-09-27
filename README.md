@@ -1,6 +1,6 @@
 # anteater
 
-![Travis CI](https://api.travis-ci.org/Renato-Lorenzi/anteater.png)
+[![Build Status](https://travis-ci.org/Renato-Lorenzi/anteater.png?branch=master)](https://travis-ci.org/Renato-Lorenzi/anteater)
 
 So, did you someday made an ant script?
 
