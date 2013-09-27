@@ -1,1 +1,4 @@
-/bin
+bin
+
+# Some editors beckup files #
+*~
