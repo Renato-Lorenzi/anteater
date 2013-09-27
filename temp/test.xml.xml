@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="renatol" name="br.com.anteater.script.AnteaterScriptTest" skipped="0" tests="11" time="1.976" timestamp="2013-09-27T22:38:27">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jre6\bin" />
+    <property name="java.vm.version" value="20.6-b01" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.2 compiled on July 8 2013" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="user.country" value="BR" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.os.patch.level" value="Service Pack 1" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="user.dir" value="C:\Users\renato.lorenzi\git\anteater" />
+    <property name="java.runtime.version" value="1.6.0_31-b05" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="basedir" value="C:\Users\renato.lorenzi\git\anteater" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jre6\lib\endorsed" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.io.tmpdir" value="C:\Users\RENATO~1.LOR\AppData\Local\Temp\" />
+    <property name="ant.core.lib" value="C:\Users\renato.lorenzi\git\anteater\lib\ant1.9.2.jar" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="user.variant" value="" />
+    <property name="os.name" value="Windows 7" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="java.library.path" value="C:\Program Files\Java\jre6\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Microsoft Shared\Microsoft Online Services;C:\Program Files (x86)\Common Files\Microsoft Shared\Microsoft Online Services;C:\oraclexe\app\oracle\product\10.2.0\server\bin;C:\PROGRA~2\Borland\Delphi5\Projects\Bpl;C:\PROGRA~2\Borland\vbroker\jre\Bin;C:\PROGRA~2\Borland\vbroker\Bin;C:\PROGRA~2\Borland\Delphi5\Bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Intel\DMIX;C:\Program Files (x86)\NTRU Cryptosystems\NTRU TCG Software Stack\bin\;C:\Program Files\NTRU Cryptosystems\NTRU TCG Software Stack\bin\;C:\Program Files\Dell\Dell Data Protection\Access\Advanced\Wave\Gemalto\Access Client\v5\;C:\Program Files (x86)\Windows Live\Shared;C:\Program Files (x86)\Common Files\Roxio Shared\DLLShared\;C:\Program Files (x86)\Common Files\Roxio Shared\OEM\DLLShared\;C:\Program Files (x86)\Common Files\Roxio Shared\OEM\DLLShared\;C:\Program Files (x86)\Common Files\Roxio Shared\OEM\12.0\DLLShared\;C:\Program Files (x86)\Roxio\OEM\AudioCore\;C:\Program Files (x86)\java\jdk1.6.0_31\bin;C:\Program Files (x86)\java\jdk1.6.0_31\lib;C:\Program Files (x86)\java\jdk1.6.0_31;c:\Program Files (x86)\Microsoft SQL Server\90\Tools\binn\;C:\Program Files (x86)\Microsoft SQL Server\80\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\90\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\90\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\PrivateAssemblies\;C:\bats;C:\Program Files (x86)\cvsnt;C:\apache-ant-1.8.2\bin;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Binn\ManagementStudio\;C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Git\cmd;." />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="50.0" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="os.version" value="6.1" />
+    <property name="user.home" value="C:\Users\renato.lorenzi" />
+    <property name="user.timezone" value="" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="java.class.path" value="C:\Users\renato.lorenzi\git\anteater\lib\ant-junit4.jar;C:\Users\renato.lorenzi\git\anteater\lib\ant-launcher.jar;C:\Users\renato.lorenzi\git\anteater\lib\js-14.jar;C:\Users\renato.lorenzi\git\anteater\lib-test\ant-junit.jar;C:\Users\renato.lorenzi\git\anteater\lib-test\junit.jar;C:\Users\renato.lorenzi\git\anteater\bin;C:\Users\renato.lorenzi\git\anteater\bin\br;C:\Users\renato.lorenzi\git\anteater\bin\br\com;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater\builder;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater\builder\nested;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater\main;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater\script;C:\Users\renato.lorenzi\git\anteater\bin\br\com\anteater\tasks;C:\Users\renato.lorenzi\git\anteater\lib\ant1.9.2.jar" />
+    <property name="user.name" value="Renato.Lorenzi" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.home" value="C:\Program Files\Java\jre6" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner br.com.anteater.script.AnteaterScriptTest filtertrace=true haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,C:\Users\renato.lorenzi\git\anteater\temp\test.xml.xml crashfile=C:\Users\renato.lorenzi\git\anteater\junitvmwatcher9157724744604502763.properties propsfile=C:\Users\renato.lorenzi\git\anteater\junit445099715052336387.properties" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="user.language" value="pt" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="java.version" value="1.6.0_31" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jre6\lib\ext;C:\Windows\Sun\Java\lib\ext" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jre6\lib\resources.jar;C:\Program Files\Java\jre6\lib\rt.jar;C:\Program Files\Java\jre6\lib\sunrsasign.jar;C:\Program Files\Java\jre6\lib\jsse.jar;C:\Program Files\Java\jre6\lib\jce.jar;C:\Program Files\Java\jre6\lib\charsets.jar;C:\Program Files\Java\jre6\lib\modules\jdk.boot.jar;C:\Program Files\Java\jre6\classes" />
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="file.separator" value="\" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.desktop" value="windows" />
+    <property name="sun.cpu.isalist" value="amd64" />
+  </properties>
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testBasic" time="0.605" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObject" time="0.232" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithChild" time="0.14" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testNestedObjectWithArray" time="0.162" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTarget" time="0.121" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTargetWithDepends" time="0.101" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTargetWithCircularReferences" time="0.014" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testTaskContainer" time="0.095" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testProp" time="0.076" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testImport" time="0.2" />
+  <testcase classname="br.com.anteater.script.AnteaterScriptTest" name="testMacrodef" time="0.063" />
+  <system-out><![CDATA[Buildfile: C:\Users\RENATO~1.LOR\AppData\Local\Temp\script-test7674056050038133227.js
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 276 milliseconds
+Buildfile: C:\Users\RENATO~1.LOR\AppData\Local\Temp\script-test2944034109655452129.js
+     [copy] Copying 4 files to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 208 milliseconds
+Buildfile: test-resources/nestedWithChild.js
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 130 milliseconds
+Buildfile: test-resources/nestedObjectWithArray.js
+     [copy] Copying 2 files to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 153 milliseconds
+Buildfile: test-resources/target.js
+test-target:
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 109 milliseconds
+Buildfile: test-resources/targetWithDepends.js
+test-file1:
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+test-file:
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+main:
+BUILD SUCCESSFUL
+Total time: 92 milliseconds
+Buildfile: test-resources/targetWithCircularReferences.js
+BUILD FAILED
+@test-resources/targetWithCircularReferences.js:41 - Target main has circular references.
+Total time: 8 milliseconds
+Buildfile: test-resources/taskContainer.js
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 88 milliseconds
+Buildfile: C:\Users\RENATO~1.LOR\AppData\Local\Temp\script-test5226703269460003920.js
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 67 milliseconds
+Buildfile: test-resources/importMain.js
+importxml.copy-file1:
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+importjs.copy-file:
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 193 milliseconds
+Buildfile: test-resources/macrodef.js
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+     [copy] Copying 1 file to C:\Users\renato.lorenzi\git\anteater\test-resources\out
+BUILD SUCCESSFUL
+Total time: 56 milliseconds
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
