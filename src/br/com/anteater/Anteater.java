@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.tools.ant.Project;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
@@ -26,7 +27,9 @@ public class Anteater {
 
 	public Anteater(ScriptLoader loader) {
 		super();
-		this.extendTasks = new AnteaterTasks(ant.getAntProject(), loader);
+		Project project = ant.getAntProject();
+		project.setName("default");
+		this.extendTasks = new AnteaterTasks(project, loader);
 	}
 
 	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {

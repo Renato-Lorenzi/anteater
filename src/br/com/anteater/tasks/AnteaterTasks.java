@@ -34,8 +34,7 @@ public class AnteaterTasks {
 		} else if ("target".equals(methodName)) {
 			ret.setExecuted(true);
 			targetManager.addTarget(projectName, thisObj, args);
-		}
-		if ("import".equals(methodName)) {
+		} else if ("import".equals(methodName)) {
 			ret.setExecuted(importSource(cx, args));
 		}
 
