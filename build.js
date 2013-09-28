@@ -4,8 +4,7 @@ ant.path({
 	id : pathId,
 	fileset : [ {
 		dir : "lib",
-		includes : "**/*.jar",
-		excludes : "**/ant1.9.2.jar"
+		includes : "**/*.jar"
 	}, {
 		dir : "lib-test",
 		includes : "**/*.jar"
@@ -14,6 +13,10 @@ ant.path({
 		dir : "bin",
 		includes : "**"
 	}
+// ,
+// fileset : {
+// file : "${ant.library.dir}/ant-junit.jar"
+// }
 });
 
 /**
@@ -30,14 +33,6 @@ ant.javac({
 ant.javac({
 	srcdir : "tests",
 	destdir : "bin",
-	classpath : {
-		refid : pathId
-	}
-});
-
-ant.taskdef({
-	name : "junit",
-	classname : "org.apache.tools.ant.taskdefs.optional.junit.JUnitTask",
 	classpath : {
 		refid : pathId
 	}

@@ -7,4 +7,4 @@ jdk:
 before_script:
  - mkdir bin
 
-script: "./anteater.sh build.js"
+script: "./anteater build.js"
