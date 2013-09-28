@@ -3,10 +3,9 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
-
-install: sudo apt-get -u install ant
   
 before_script:
  - mkdir bin
+ - export ANT_HOME=/usr/local/ant
 
 script: "./anteater build.js"
