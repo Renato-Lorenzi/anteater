@@ -6,6 +6,6 @@ jdk:
   
 before_script:
  - mkdir bin
- - export ANT_HOME=/usr/local/ant
+ - export ANT_HOME="$HOME/.ant"
 
 script: "./anteater build.js"
