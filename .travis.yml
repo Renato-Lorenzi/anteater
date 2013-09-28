@@ -6,6 +6,8 @@ jdk:
   
 before_script:
  - mkdir bin
- - export ANT_HOME="$HOME/.ant"
+ - echo $ANT_HOME
+
+install: sudo apt-get install ant
 
 script: "./anteater build.js"
