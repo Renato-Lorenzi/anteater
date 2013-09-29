@@ -2,8 +2,7 @@ package br.com.anteater.tasks;
 
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
-
-import br.com.anteater.InvalidArguments;
+import br.com.anteater.InvalidArgumentsException;
 
 public class Checks {
 
@@ -13,12 +12,13 @@ public class Checks {
 	 * @param args
 	 * @param argsCount
 	 * @param classes
-	 * @throws InvalidArguments
+	 * @throws InvalidArgumentsException
 	 */
-	public static void checkArgs(NativeArray args, Class<?>... classes) throws InvalidArguments {
+	public static void checkArgs(NativeArray args, Class<?>... classes) throws InvalidArgumentsException {
 		for (int i = 0; i < classes.length; i++) {
-			if (!(args.get(i).getClass().equals(classes[i]))) {
-				throw new InvalidArguments("Invalid arguments in call of task.");
+			Class<? extends Object> clazz = args.get(i).getClass();
+			if (!(classes[i].isAssignableFrom(clazz))) {
+				throw new InvalidArgumentsException("Invalid argument type in parameter %d. Type: expected: %s, found: %s", i, classes[i].getName(), clazz.getName());
 			}
 		}
 	}
@@ -29,12 +29,13 @@ public class Checks {
 	 * @param args
 	 * @param argsCount
 	 * @param classes
-	 * @throws InvalidArguments
+	 * @throws InvalidArgumentsException
 	 */
-	public static void checkArgs(NativeArray args, int argsCount, Class<?>... classes) throws InvalidArguments {
+	public static void checkArgs(NativeArray args, int argsCount, Class<?>... classes) throws InvalidArgumentsException {
 		if (args.size() != argsCount) {
-			throw new InvalidArguments("Invalid number of parameters in call of the task.");
+			throw new InvalidArgumentsException("Invalid number of parameters in call of the task.");
 		}
+		checkArgs(args, classes);
 	}
 
 	/**
@@ -42,18 +43,18 @@ public class Checks {
 	 * @param args
 	 * @param names
 	 * @param classes
-	 * @throws InvalidArguments
+	 * @throws InvalidArgumentsException
 	 */
-	public static void checkArgs(NativeObject args, String[] names, Class<?>... classes) throws InvalidArguments {
+	public static void checkArgs(NativeObject args, String[] names, Class<?>... classes) throws InvalidArgumentsException {
 		for (int i = 0; i < names.length; i++) {
 			Object object = args.get(names[i]);
 			if (object == null) {
-				throw new InvalidArguments("Required arg " + names[i] + " was not informed.");
+				throw new InvalidArgumentsException("Required arg " + names[i] + " was not informed.");
 			}
-			if (!(object.getClass().equals(classes[i]))) {
-				throw new InvalidArguments("Invalid arguments in call of task.");
+			Class<? extends Object> objClass = object.getClass();
+			if (!(classes[i].isAssignableFrom(objClass))) {
+				throw new InvalidArgumentsException("Invalid argument type in parameter %s. Type: expected: %s, found: %s", names[i], classes[i].getName(), objClass.getName());
 			}
 		}
 	}
-
 }

@@ -10,7 +10,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 
-import br.com.anteater.InvalidArguments;
+import br.com.anteater.InvalidArgumentsException;
 
 public class TargetManager {
 
@@ -22,7 +22,7 @@ public class TargetManager {
 		this.project = project;
 	}
 
-	public void addTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArguments {
+	public void addTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArgumentsException {
 		AnteaterTarget anteaterTarget = new AnteaterTarget(projectName, thisObj, args);
 		String name = anteaterTarget.getName();
 		if (targets.containsKey(name)) {
@@ -32,10 +32,14 @@ public class TargetManager {
 
 	}
 
-	public void execute(Context cx, NativeArray args) throws InvalidArguments {
+	public void execute(Context cx, NativeArray args) throws InvalidArgumentsException {
 		Checks.checkArgs(args, 1, String.class);
 
 		String targetName = (String) args.get(0);
+		execute(cx, targetName);
+	}
+
+	public void execute(Context cx, String targetName) {
 		HashSet<String> executed = new HashSet<String>();
 		HashSet<String> myDependents = new HashSet<String>();
 

@@ -32,14 +32,14 @@ public class Anteater {
 		this.extendTasks = new AnteaterTasks(project, loader);
 	}
 
-	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArguments {
+	public Object exec(Context cx, Scriptable thisObj, Object[] functionParams, Function funObj) throws MissingMethodException, InvalidArgumentsException {
 		String methodName = (String) functionParams[0];
 		NativeArray args = (NativeArray) functionParams[1];
 		TaskResult ret = extendTasks.execute(cx, thisObj, methodName, args);
 		return ret.isExecuted() ? ret.getResult() : executeDefaultTask(cx, thisObj, methodName, args);
 	}
 
-	private Object executeDefaultTask(Context cx, Scriptable thisObj, String methodName, NativeArray args) throws InvalidArguments, MissingMethodException {
+	private Object executeDefaultTask(Context cx, Scriptable thisObj, String methodName, NativeArray args) throws InvalidArgumentsException, MissingMethodException {
 		NestedContainer container = new NestedContainer();
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		HashMap<String, Object> params = new HashMap<String, Object>();
@@ -49,7 +49,7 @@ public class Anteater {
 		NestedLambda method = null;
 
 		if (args.size() > 4) {
-			throw new InvalidArguments("Number of params don\'t supported.");
+			throw new InvalidArgumentsException("Number of params don\'t supported.");
 		}
 
 		for (Object arg : args) {
@@ -57,7 +57,7 @@ public class Anteater {
 				getParams(thisObj, (Scriptable) arg, params, container);
 			} else if (arg instanceof String) {
 				if (paramText != null) {
-					throw new InvalidArguments("Two params text don\'t supported.");
+					throw new InvalidArgumentsException("Two params text don\'t supported.");
 				}
 
 				paramText = (String) arg;
@@ -65,13 +65,13 @@ public class Anteater {
 			} else if (arg instanceof Function) {
 
 				if (method != null) {
-					throw new InvalidArguments("Two lambda functions don\'t supported.");
+					throw new InvalidArgumentsException("Two lambda functions don\'t supported.");
 				}
 				method = new NestedLambda(cx, thisObj, (Function) arg);
 				container.addObject(method);// Adicionado no container, pois
 											// terá mais NestedObject
 			} else {
-				throw new InvalidArguments("Type of param don't supported.");
+				throw new InvalidArgumentsException("Type of param don't supported.");
 			}
 		}
 		arguments.add(container);
@@ -111,4 +111,13 @@ public class Anteater {
 	public void endExecution() {
 
 	}
+
+	public String getDefaultTarget() {
+		return extendTasks.getDefaultTarget();
+	}
+
+	public void executeTarget(Context cx, String defaultTarget) {
+		extendTasks.executeTarget(cx, defaultTarget);
+	}
+
 }

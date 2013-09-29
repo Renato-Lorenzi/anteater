@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.apache.tools.ant.BuildException;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptStackElement;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+
+import br.com.anteater.InvalidArgumentsException;
 
 /**
  * Define basic script functions and functionality. <br>
@@ -24,6 +24,7 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 
 	private static final long serialVersionUID = -5638074146250193112L;
 	protected static ScriptBase self = null;
+	public static String DEFAULT_SCRIPT = "build.js";
 
 	@Override
 	public String getClassName() {
@@ -34,8 +35,10 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 	 * Process arguments as would a normal Java program. Also create a new
 	 * Context and associate it with the current thread. Then set up the
 	 * execution environment and begin to execute scripts.
+	 * 
+	 * @throws InvalidArgumentsException
 	 */
-	public final int execute(String args[]) {
+	public final int execute(String args[]) throws InvalidArgumentsException {
 		int exitCode = -1;
 		self = this;
 		// Associate a new Context with this thread
@@ -60,7 +63,7 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 			Scriptable argsObj = cx.newArray(this, array);
 			defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
 			processSource(cx, "script/ant.js");
-			exitCode = doExecute(cx, args.length == 0 ? null : args[0]);
+			exitCode = doExecute(cx, args);
 
 		} finally {
 			self = null;
@@ -93,25 +96,18 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 	 * @param cx
 	 * @param command
 	 * @return
+	 * @throws InvalidArgumentsException
 	 */
-	protected abstract int doExecute(Context cx, String command);
+	protected abstract int doExecute(Context cx, String[] args) throws InvalidArgumentsException;
 
 	/**
 	 * Parse arguments.
+	 * 
+	 * TODO review -version
 	 */
 	private String[] processOptions(Context cx, String args[]) {
-		for (int i = 0; i < args.length; i++) {
-			String arg = args[i];
-			if (!arg.startsWith("-")) {
-				String[] result = new String[args.length - i];
-				for (int j = i; j < args.length; j++)
-					result[j - i] = args[j];
-				return result;
-			} else if (arg.equals("-version")) {
-				// TODO review version
-			}
-		}
-		return new String[0];
+		return args;
+
 	}
 
 	/**

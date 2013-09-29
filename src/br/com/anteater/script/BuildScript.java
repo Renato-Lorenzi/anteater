@@ -1,5 +1,7 @@
 package br.com.anteater.script;
 
+import java.io.File;
+
 import org.apache.tools.ant.BuildException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -8,20 +10,27 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
+import br.com.anteater.InvalidArgumentsException;
+
 public class BuildScript extends AnteaterScript {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String buildFile;
+	private String[] targets = new String[] {};
 
 	@Override
-	protected int doExecute(Context cx, String command) {
+	protected int doExecute(Context cx, String[] args) throws InvalidArgumentsException {
+		processArgs(args);
+
 		int exitCode = -1;
 		long startTime = System.currentTimeMillis();
 		try {
-			System.out.println("Buildfile: " + command);
-			processSource(cx, command);
+			System.out.println("Buildfile: " + buildFile);
+			processSource(cx, buildFile);
+			executeTargets(cx);
 			System.out.println("BUILD SUCCESSFUL");
 			exitCode = 0;
 		} catch (WrappedException we) {
@@ -49,6 +58,40 @@ public class BuildScript extends AnteaterScript {
 		return exitCode;
 	}
 
+	/**
+	 * Execute args targets or default target if args targets dont exists
+	 * 
+	 * @param cx
+	 */
+	private void executeTargets(Context cx) {
+		if (targets.length > 0) {
+			for (String target : targets) {
+				anteater.executeTarget(cx, target);
+			}
+		} else {
+			String defaultTarget = anteater.getDefaultTarget();
+			if (defaultTarget != null) {
+				anteater.executeTarget(cx, defaultTarget);
+			}
+		}
+	}
+
+	private void processArgs(String[] args) throws InvalidArgumentsException {
+		// ************************************ if setted file then use
+		buildFile = args.length == 0 || args[0].endsWith(".js") ? args[0] : DEFAULT_SCRIPT;
+
+		if (!new File(buildFile).exists()) {
+			throw new InvalidArgumentsException("Build file " + buildFile + " not found in current directory.");
+		}
+
+		// ALL args because the build file name can be the default
+		for (String arg : args) {
+			if (arg.startsWith("-t:")) {
+				targets = arg.split(":")[1].split(";");
+			}
+		}
+	}
+
 	@Override
 	protected void defineFunctions() {
 		defineFunctionProperties(new String[] { "executeAnt", "shellExec" }, BuildScript.class, ScriptableObject.DONTENUM);
@@ -62,5 +105,4 @@ public class BuildScript extends AnteaterScript {
 		return AnteaterScript.shellExec(cx, thisObj, args, funObj);
 	}
 
-	
 }

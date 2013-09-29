@@ -12,7 +12,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 
 import br.com.anteater.Anteater;
-import br.com.anteater.InvalidArguments;
+import br.com.anteater.InvalidArgumentsException;
 import br.com.anteater.builder.MissingMethodException;
 
 /**
@@ -34,7 +34,7 @@ public abstract class AnteaterScript extends ScriptBase {
 	}
 
 	/**
-	 * @throws InvalidArguments
+	 * @throws InvalidArgumentsException
 	 * @throws MissingMethodException
 	 * 
 	 * 
@@ -45,7 +45,7 @@ public abstract class AnteaterScript extends ScriptBase {
 			ret = anteater.exec(cx, thisObj, args, funObj);
 		} catch (MissingMethodException e) {
 			throw new BuildException(e);
-		} catch (InvalidArguments e) {
+		} catch (InvalidArgumentsException e) {
 			throw new BuildException(e);
 		}
 		return ret == null ? Context.getUndefinedValue() : ret;

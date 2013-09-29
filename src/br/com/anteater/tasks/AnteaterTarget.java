@@ -5,7 +5,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 
-import br.com.anteater.InvalidArguments;
+import br.com.anteater.InvalidArgumentsException;
 
 /**
  * Anteater target is only "special" lambda functions
@@ -19,17 +19,25 @@ public class AnteaterTarget {
 	private Function lambda;
 	private String[] depends;
 
-	public AnteaterTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArguments {
+	public AnteaterTarget(String projectName, Scriptable thisObj, NativeArray args) throws InvalidArgumentsException {
 		super();
 		this.thisObj = thisObj;
-
-		Checks.checkArgs(args, 2, NativeObject.class, Function.class);
+		String dependsStr;
+		try {
+			// Can be NativeObject
+			Checks.checkArgs(args, 2, NativeObject.class, Function.class);
+			NativeObject params = (NativeObject) args.get(0);
+			Checks.checkArgs(params, new String[] { "name" }, String.class);
+			name = (String) params.get("name");
+			dependsStr = (String) params.get("depends");
+		} catch (InvalidArgumentsException e) {
+			// if it is not native object is String (only name)
+			Checks.checkArgs(args, 2, String.class, Function.class);
+			name = (String) args.get(0);
+			dependsStr = null;
+		}
 		this.lambda = (Function) args.get(1);
-		NativeObject params = (NativeObject) args.get(0);
 
-		Checks.checkArgs(params, new String[] { "name" }, String.class);
-		name = (String) params.get("name");
-		String dependsStr = (String) params.get("depends");
 		depends = dependsStr != null && !dependsStr.equals("") ? dependsStr.split(",") : new String[] {};
 
 		name = projectName == null ? name : projectName + "." + name;

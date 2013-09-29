@@ -12,6 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.anteater.InvalidArgumentsException;
+
 public class AnteaterScriptTest extends TestCase {
 
 	public static final String TEST_RES = "test-resources/";
@@ -31,7 +33,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testBasic() throws IOException {
+	public void testBasic() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
@@ -44,7 +46,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testNestedObject() throws IOException {
+	public void testNestedObject() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -60,7 +62,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testNestedObjectWithChild() throws IOException {
+	public void testNestedObjectWithChild() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "nestedWithChild.txt");
 		File inFile = new File(IN_DIR + "nestedWithChildRet.txt");
 
@@ -71,7 +73,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testNestedObjectWithArray() throws IOException {
+	public void testNestedObjectWithArray() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -85,7 +87,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testTarget() throws IOException {
+	public void testTarget() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
@@ -96,7 +98,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testTargetWithDepends() throws IOException {
+	public void testTargetWithDepends() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -110,7 +112,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testTargetWithCircularReferences() throws IOException {
+	public void testTargetWithCircularReferences() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -124,7 +126,58 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testTaskContainer() throws IOException {
+	public void testDefaultTarget() throws IOException, InvalidArgumentsException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "defaultTarget.js" });
+
+		assertFile(outFile, inFile);
+	}
+
+	@Test
+	public void testWithoutDefaultTarget() throws IOException, InvalidArgumentsException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "withoutDefaultTarget.js" });
+
+		assertNotExistsFile(outFile, inFile);
+	}
+
+	@Test
+	public void testTargetWithDiffDeclaration() throws IOException, InvalidArgumentsException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		ScriptBase script = new BuildScript();
+		script.execute(new String[] { TEST_RES + "targetWithDiffDeclaration.js" });
+
+		assertFile(outFile, inFile);
+		assertFile(outFile1, inFile1);
+	}
+
+	@Test
+	public void testCallParameterizedTarget() throws IOException, InvalidArgumentsException {
+		File outFile = new File(OUT_DIR + "file.txt");
+		File outFile1 = new File(OUT_DIR + "file1.txt");
+		File inFile = new File(IN_DIR + "file.txt");
+		File inFile1 = new File(IN_DIR + "file1.txt");
+
+		ScriptBase script = new BuildScript();
+		// call only test-file and dependencies
+		script.execute(new String[] { TEST_RES + "callParameterizedTarget.js", "-t:test-file" });
+
+		assertFile(outFile, inFile);
+		assertNotExistsFile(outFile1, inFile1);
+	}
+
+	@Test
+	public void testTaskContainer() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
@@ -135,7 +188,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testProp() throws IOException {
+	public void testProp() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File inFile = new File(IN_DIR + "file.txt");
 
@@ -152,7 +205,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testImport() {
+	public void testImport() throws InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");
@@ -167,7 +220,7 @@ public class AnteaterScriptTest extends TestCase {
 	}
 
 	@Test
-	public void testMacrodef() throws IOException {
+	public void testMacrodef() throws IOException, InvalidArgumentsException {
 		File outFile = new File(OUT_DIR + "file.txt");
 		File outFile1 = new File(OUT_DIR + "file1.txt");
 		File inFile = new File(IN_DIR + "file.txt");

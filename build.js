@@ -1,58 +1,79 @@
-var pathId = "class-path-id";
+var runTestsID = "run-tests";
 
-ant.path({
-	id : pathId,
-	fileset : [ {
-		dir : "lib",
-		includes : "**/*.jar"
-	}, {
-		dir : "lib-test",
-		includes : "**/*.jar"
-	} ],
-	dirset : {
-		dir : "bin",
-		includes : "**"
-	}
-// ,
-// fileset : {
-// file : "${ant.library.dir}/ant-junit.jar"
-// }
+ant.defaultTarget(runTestsID);
+
+/**
+ * Compile and run all tests
+ * 
+ */
+ant.target(runTestsID, function() {
+	var pathId = "class-path-id";
+
+	ant.path({
+		id : pathId,
+		fileset : [ {
+			dir : "lib",
+			includes : "**/*.jar"
+		}, {
+			dir : "lib-test",
+			includes : "**/*.jar"
+		} ],
+		dirset : {
+			dir : "bin",
+			includes : "**"
+		}
+	});
+
+	/**
+	 * Compile all src and tests resources
+	 */
+	ant.javac({
+		srcdir : "src",
+		destdir : "bin",
+		classpath : {
+			refid : pathId
+		}
+	});
+
+	ant.javac({
+		srcdir : "tests",
+		destdir : "bin",
+		classpath : {
+			refid : pathId
+		}
+	});
+
+	ant.junit({
+		printsummary : "yes",
+		fork : "yes",
+		showoutput : "true",
+		classpath : {
+			refid : pathId
+		},
+		formatter : {
+			type : "xml"
+		},
+		test : {
+			name : "br.com.anteater.AllTests",
+			outfile : "temp/test.xml"
+		}
+	});
+
 });
 
 /**
- * Compile all src and tests resources
+ * Command used to generate anteater.jar
  */
-ant.javac({
-	srcdir : "src",
-	destdir : "bin",
-	classpath : {
-		refid : pathId
-	}
+ant.target("generate-anteater", function() {
+	ant.jar({
+		destfile : "jar/anteater.jar",
+		basedir : "bin",
+		excludes : "**/*Test.class"
+	});
+
 });
 
-ant.javac({
-	srcdir : "tests",
-	destdir : "bin",
-	classpath : {
-		refid : pathId
-	}
-});
-
-ant.junit({
-	printsummary : "yes",
-	fork : "yes",
-	showoutput : "true",
-	classpath : {
-		refid : pathId
-	},
-	formatter : {
-		type : "xml"
-	},
-	test : {
-		name : "br.com.anteater.script.AnteaterScriptTest",
-		outfile : "temp/test.xml"
-	}
-});
+// ************ Utils ************
 
 /**
  * Echo path

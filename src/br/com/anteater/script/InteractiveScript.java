@@ -28,7 +28,7 @@ public class InteractiveScript extends AnteaterScript {
 	private static boolean quitting;
 
 	@Override
-	protected int doExecute(Context cx, String command) {
+	protected int doExecute(Context cx, String[] args) {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String sourceName = "<stdin>";
 		int lineno = 1;
