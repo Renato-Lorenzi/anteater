@@ -5,9 +5,17 @@ if [ -z "$JAVA_HOME" ]; then
 	exit -1
 fi
 
+#Check if not exists ant_home. If not, discovers (try)
 if [ -z "$ANT_HOME" ]; then 
-	echo "Error: ANT_HOME var not found."
-	exit -1
+        #if here?
+	if [ -d "/usr/share/ant" ]; then
+		ANT_HOME="/usr/share/ant"
+	elif [ -d "/usr/share/apache-ant" ]; then
+		ANT_HOME="/usr/share/apache-ant"
+	else
+		echo "Error: ANT_HOME var not found."
+		exit -1
+	fi
 fi
 
 
