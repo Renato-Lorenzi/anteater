@@ -10,4 +10,6 @@ before_script:
 
 install: sudo apt-get install ant
 
-script: "./anteater build.js"
+script:
+ - ant -f test-resources/examples/build.xml
+ - "./anteater build.js"

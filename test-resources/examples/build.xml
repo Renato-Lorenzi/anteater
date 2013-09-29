@@ -3,7 +3,7 @@
 
 	<!-- ponto de partida -->
 	<target name="main">
-		<echo>asdsad</echo>
+		<echo>${ant.library.dir}</echo>
 	</target>
 
 </project>
