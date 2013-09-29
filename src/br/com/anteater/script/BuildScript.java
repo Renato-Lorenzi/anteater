@@ -28,10 +28,10 @@ public class BuildScript extends AnteaterScript {
 		int exitCode = -1;
 		long startTime = System.currentTimeMillis();
 		try {
-			System.out.println("Buildfile: " + buildFile);
+			beforeBuild();
 			processSource(cx, buildFile);
 			executeTargets(cx);
-			System.out.println("BUILD SUCCESSFUL");
+			afterBuildSuccess();
 			exitCode = 0;
 		} catch (WrappedException we) {
 			// Some form of exception was caught by JavaScript and
@@ -55,7 +55,18 @@ public class BuildScript extends AnteaterScript {
 			ex.printStackTrace();
 		}
 		System.out.println("Total time: " + (System.currentTimeMillis() - startTime) + " milliseconds");
+		System.out.println();
 		return exitCode;
+	}
+
+	private void afterBuildSuccess() {
+		System.out.println();
+		System.out.println("BUILD SUCCESSFUL");
+	}
+
+	private void beforeBuild() {
+		System.out.println("Buildfile: " + buildFile);
+		System.out.println();
 	}
 
 	/**
@@ -78,7 +89,7 @@ public class BuildScript extends AnteaterScript {
 
 	private void processArgs(String[] args) throws InvalidArgumentsException {
 		// ************************************ if setted file then use
-		buildFile = args.length == 0 || args[0].endsWith(".js") ? args[0] : DEFAULT_SCRIPT;
+		buildFile = args.length == 0 || !args[0].endsWith(".js") ? DEFAULT_SCRIPT : args[0];
 
 		if (!new File(buildFile).exists()) {
 			throw new InvalidArgumentsException("Build file " + buildFile + " not found in current directory.");
