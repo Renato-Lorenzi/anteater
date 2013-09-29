@@ -2,6 +2,10 @@ var runTestsID = "run-tests";
 
 ant.defaultTarget(runTestsID);
 
+ant.property({
+	file : "build.properties"
+});
+
 /**
  * Compile and run all tests
  * 
@@ -68,7 +72,13 @@ ant.target("generate-anteater", function() {
 	ant.jar({
 		destfile : "jar/anteater.jar",
 		basedir : "bin",
-		excludes : "**/*Test.class"
+		excludes : "**/*Test.class",
+		manifest : {
+			attribute : {
+				name : "Anteater-Version",
+				value : "${anteater.version}"
+			}
+		}
 	});
 
 });
