@@ -1,11 +1,11 @@
 #! /bin/sh
 
-if [ -z ${JAVA_HOME} ]; then 
+if [ -z "$JAVA_HOME" ]; then 
 	echo "Error: JAVA_HOME var not found."
 	exit -1
 fi
 
-if [ -z ${ANT_HOME} ]; then 
+if [ -z "$ANT_HOME" ]; then 
 	echo "Error: ANT_HOME var not found."
 	exit -1
 fi
