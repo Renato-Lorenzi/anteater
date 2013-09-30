@@ -2,3 +2,4 @@ bin
 
 # Some editors beckup files #
 *~
+/target
