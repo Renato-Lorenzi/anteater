@@ -2,4 +2,12 @@ bin
 
 # Some editors beckup files #
 *~
-/target
+
+# Maven files #
+target
+
+# Eclipse files #
+.settings
+.classpath
+.project
+build.properties

@@ -15,11 +15,9 @@
  */
 package br.com.anteater.builder;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 
 import br.com.anteater.builder.nested.NestedObject;
 
