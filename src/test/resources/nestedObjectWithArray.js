@@ -1,7 +1,7 @@
 /*
  * 
  *  
- *  <copy todir="test-resources/out/">
+ *  <copy todir="src/test/resources/out/">
  * 		<fileset>
  * 			<include name="**file.txt"/>
  *      	<include name="**file.txt"/>
@@ -11,9 +11,9 @@
  */
 
 ant.copy({
-	todir : 'test-resources/out/',
+	todir : 'src/test/resources/out/',
 	fileset : {
-		dir : 'test-resources/in/',
+		dir : 'src/test/resources/in/',
 		include : [ {
 			name : "**/file.txt"
 		}, {

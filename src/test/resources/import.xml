@@ -3,7 +3,7 @@
 
 	<!-- ponto de partida -->
 	<target name="copy-file1">
-		<copy file="test-resources/in/file1.txt" tofile="test-resources/out/file1.txt" />
+		<copy file="src/test/resources/in/file1.txt" tofile="src/test/resources/out/file1.txt" />
 	</target>
 
 </project>

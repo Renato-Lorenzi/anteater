@@ -1,10 +1,10 @@
 ant.import({
-	file : "test-resources/import.js",
+	file : "src/test/resources/import.js",
 	as : "importjs"
 });
 
 ant.import({
-	file : "anteater/test-resources/import.xml",
+	file : "anteater/src/test/resources/import.xml",
 	as : "importxml"
 });
 

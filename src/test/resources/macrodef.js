@@ -7,8 +7,8 @@ ant.macrodef({
 	ant.sequential(function() {
 
 		ant.copy({
-			file : "test-resources/in/file.txt",
-			tofile : "test-resources/out/file.txt"
+			file : "src/test/resources/in/file.txt",
+			tofile : "src/test/resources/out/file.txt"
 		});
 		ant.eventCopy();
 	});
@@ -17,8 +17,8 @@ ant.macrodef({
 ant.copyFiles({
 	eventCopy : {
 		copy : {
-			file : "test-resources/in/file1.txt",
-			tofile : "test-resources/out/file1.txt"
+			file : "src/test/resources/in/file1.txt",
+			tofile : "src/test/resources/out/file1.txt"
 		}
 	}
 });

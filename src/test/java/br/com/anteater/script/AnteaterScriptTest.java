@@ -16,7 +16,7 @@ import br.com.anteater.InvalidArgumentsException;
 
 public class AnteaterScriptTest extends TestCase {
 
-	public static final String TEST_RES = "test-resources/";
+	public static final String TEST_RES = "src/test/resources/";
 	public static final String IN_DIR = TEST_RES + "in/";
 	public static final String OUT_DIR = TEST_RES + "out/";
 	File outDirFile = new File(OUT_DIR);
