@@ -5,7 +5,6 @@
 target
 
 # Eclipse files #
-bin
 .settings
 .classpath
 .project

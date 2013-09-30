@@ -23,6 +23,7 @@ import br.com.anteater.InvalidArgumentsException;
 public abstract class ScriptBase extends ScriptableObject implements ScriptLoader {
 
 	private static final long serialVersionUID = -5638074146250193112L;
+	private static final String JS_MAIN = "src/main/js/ant.js";
 	protected static ScriptBase self = null;
 	public static String DEFAULT_SCRIPT = "build.js";
 
@@ -62,7 +63,7 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 			}
 			Scriptable argsObj = cx.newArray(this, array);
 			defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
-			processSource(cx, "script/ant.js");
+			processSource(cx, JS_MAIN);
 			exitCode = doExecute(cx, args);
 
 		} finally {
