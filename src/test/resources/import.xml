@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="seniortools">
+
+	<!-- ponto de partida -->
+	<target name="copy-file1">
+		<copy file="src/test/resources/in/file1.txt" tofile="src/test/resources/out/file1.txt" />
+	</target>
+
+</project>
