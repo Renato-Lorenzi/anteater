@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptStackElement;
@@ -23,7 +24,6 @@ import br.com.anteater.InvalidArgumentsException;
 public abstract class ScriptBase extends ScriptableObject implements ScriptLoader {
 
 	private static final long serialVersionUID = -5638074146250193112L;
-	private static final String JS_MAIN = "src/main/js/ant.js";
 	protected static ScriptBase self = null;
 	public static String DEFAULT_SCRIPT = "build.js";
 
@@ -63,7 +63,7 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 			}
 			Scriptable argsObj = cx.newArray(this, array);
 			defineProperty("arguments", argsObj, ScriptableObject.DONTENUM);
-			processSource(cx, JS_MAIN);
+			processAntjs(cx);
 			exitCode = doExecute(cx, args);
 
 		} finally {
@@ -71,6 +71,13 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 			Context.exit();
 		}
 		return exitCode;
+	}
+
+	private void processAntjs(Context cx) {
+		// this compressed method the ant.js. The uncompressed method is
+		// src/main/ant.js
+		StringReader reader = new StringReader("function _M_M_C(){}ant=new _M_M_C();ant.__noSuchMethod__=function(n,a){return executeAnt(n,a);};shell=new _M_M_C();shell.__noSuchMethod__=function (n,a){return shellExec(n,a)};");
+		evaluate(cx, "ant.js", reader);
 	}
 
 	protected abstract void defineFunctions();
@@ -129,6 +136,10 @@ public abstract class ScriptBase extends ScriptableObject implements ScriptLoade
 			return;
 		}
 
+		evaluate(cx, filename, in);
+	}
+
+	private void evaluate(Context cx, String filename, Reader in) {
 		try {
 			// Here we evalute the entire contents of the file as
 			// a script. Text is printed only if the print() function

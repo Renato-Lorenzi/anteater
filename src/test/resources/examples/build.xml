@@ -3,7 +3,7 @@
 
 	<!-- ponto de partida -->
 	<target name="main">
-		<echo>${ant.library.dir}</echo>
+		<echo>${basedir}</echo>
 	</target>
 
 </project>
